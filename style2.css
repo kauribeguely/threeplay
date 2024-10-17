@@ -1,0 +1,21 @@
+body
+{
+  background: linear-gradient(321deg, rgba(12,16,51,1) 0%, rgb(88 118 209) 100%);
+  /* background: linear-gradient(321deg, black 0%, rgba(0,0,0,0.7) 100%); */
+}
+
+canvas
+{
+  position: absolute;
+  /* right: 0; */
+}
+
+img
+{
+  position: absolute;
+  mix-blend-mode: screen;
+  top: calc(50% - 150px);
+  height: 265px;
+  z-index: 1;
+  left: 10%;
+}
