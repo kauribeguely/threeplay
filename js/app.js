@@ -10,7 +10,13 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   const loader = new GLTFLoader();
 
   const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
-  camera.position.z = 5;
+  // camera.position.z = 5;
+  // Set the camera position
+  camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
+
+  // Set the camera rotation
+  camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
+
   // camera.position.y = 1;
 
   const scene = new THREE.Scene();
@@ -154,6 +160,21 @@ loudMouse();
     mouseToX = (percentY-0.5)*0.17;
     mouseToZ = (percentX-0.5)*-0.1;
 
+  }
+
+  document.onkeydown = function(evt)
+  {
+    console.log(evt.key);
+
+    switch(evt.key)
+    {
+      case " ":
+        console.log(camera.position);
+        break;
+
+
+
+    }
   }
 
   function toRad(deg)
