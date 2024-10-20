@@ -83,7 +83,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let mouseObjOutline;
 
   loadDesk();
-  loudMouse();
+  // loudMouse();
 
 
 
@@ -97,10 +97,13 @@ var deskObj;
     {
       // deskObj
       obj1 = gltf.scene;
-      objGroup.add( obj1 );
+      // objGroup.add( obj1 );
+      scene.add(obj1);
       deskObj = obj1;
       deskObjOutline = deskObj.clone();
-      outLineObj(deskObjOutline, outlineMaterial);
+      outLineObj(deskObjOutline);
+      scene.add(deskObjOutline);
+      // outLineObj(deskObj);
 
 
     },    );
@@ -123,7 +126,7 @@ scene.add(mouseGroup);
       // objGroup.add( obj1 );
       mouseGroup.add( obj1 );
       mouseObjOutline = mouseObj.clone();
-      outLineObj(mouseObjOutline, outlineMaterial);
+      outLineObj(mouseObjOutline);
       // directionalLight.target = obj1;
       //
       // obj1.scale.set(0.3,0.3,0.3);
@@ -162,17 +165,32 @@ scene.add(mouseGroup);
           // const geometry = new THREE.BoxGeometry();
 
           // Create the normal material (base cube)
-          const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green cube
+          const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 }); // Green cube
           const cube = new THREE.Mesh(geometry, material);
           scene.add(cube);
 
           // Create the outline material (using custom shaders)
+          // const outlineMaterial = new THREE.ShaderMaterial({
+          //     vertexShader: `
+          //         varying vec3 vNormal;
+          //         void main() {
+          //           vec4 mvPosition = modelViewMatrix * vec4(position * 1.02, 1.0); // Scale by 1.05 for outline
+          //           gl_Position = projectionMatrix * mvPosition;
+          //         }
+          //     `,
+          //     fragmentShader: `
+          //         void main() {
+          //             gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outline color
+          //         }
+          //     `,
+          //     side: THREE.BackSide // Render the outline behind the original geometry
+          // });
           const outlineMaterial = new THREE.ShaderMaterial({
               vertexShader: `
                   varying vec3 vNormal;
                   void main() {
                       vNormal = normalize(normalMatrix * normal);
-                      vec3 newPosition = position + normal * 0.1;
+                      vec3 newPosition = position + normal * 0.02;
                       gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
                   }
               `,
@@ -189,18 +207,19 @@ scene.add(mouseGroup);
           scene.add(outlineMesh);
 
           // Set the cube position and rotation
-          cube.position.set(0, 0, 0);
-          outlineMesh.position.set(0, 0, 0); // Make sure the outline is in the same position
+          cube.position.set(-3, 0, 0);
+          outlineMesh.position.set(-3, 0, 0); // Make sure the outline is in the same position
 
 
 
 
-function outLineObj(obj, material)
+function outLineObj(obj)
 {
   // Traverse through the mouseObj to apply the material to all meshes
+  console.log('here');
   obj.traverse((child) => {
       if (child.isMesh) {
-          child.material = material; // Apply the material to each mesh
+          child.material = outlineMaterial; // Apply the material to each mesh
       }
   });
 }
