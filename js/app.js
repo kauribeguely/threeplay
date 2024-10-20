@@ -2,12 +2,15 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   const canvasWidth = 1;
   var showPhone = true;
   // const loader = new THREE.GLTFLoader();
   const loader = new GLTFLoader();
+  const objLoader = new OBJLoader();
 
   const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
   // camera.position.z = 5;
@@ -82,26 +85,138 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let deskObjOutline;
   let mouseObjOutline;
 
-  loadDesk();
+  loadScreenAndKeys();
+  loadOutline();
   // loudMouse();
 
 
+  // var outline;
+  //   function loadOutline()
+  //   {
+  //     // loader.load('obj/deskcartoon.glb',	function ( gltf )
+  //     loader.load('obj/outline.glb',	function ( gltf )
+  //     {
+  //       // deskObj
+  //       outline = gltf.scene;
+  //       console.log(outline);
+  //       // objGroup.add( obj1 );
+  //       scene.add(outline);
+  //
+  //
+  //     },    );
+  //   }
+  var outline;
+    function loadOutline()
+    {
+      // loader.load('obj/deskcartoon.glb',	function ( gltf )
+      objLoader.load('obj/outline.obj',	function ( obj )
+      // objLoader.load('obj/cheeks.obj',	function ( obj )
+      {
+        // deskObj
+        outline = obj;
+        console.log(outline);
+        // objGroup.add( obj1 );
+        scene.add(outline);
 
+
+        // outline = obj;
+        //
+        // // Create edges from the object geometry
+        // const edges = new THREE.EdgesGeometry(outline.geometry);
+        // const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }); // Change color as needed
+        // const lineSegments = new THREE.LineSegments(edges, lineMaterial);
+        //
+        // // Add the lines to the scene
+        // scene.add(lineSegments);
+
+
+        const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Change color as needed
+        outline.traverse((child) => {
+            // if (child.isMesh) {
+                // Optionally adjust the thickness here, for example, by scaling
+                // child.scale.set(1.2, 1.2, 1.2); // Scale to thicken lines
+                child.material = lineMaterial; // Apply the new material
+            // }
+        });
+
+        // let clone1 = outline.clone();
+        // clone1.position.set(.001, 0, 0);
+        // let clone2 = outline.clone();
+        // clone1.position.set(.002, 0, 0);
+        // // clone2.position.set(0, .0005, 0);
+        // let clone3 = outline.clone();
+        // clone1.position.set(.003, 0, 0);
+        // // clone3.position.set(0, 0, .0005);
+        // scene.add(clone1);
+        // scene.add(clone2);
+        // scene.add(clone3);
+
+
+
+
+
+
+
+      }, );
+    }
+
+    // / Dynamic tube thickness
+          let tubeRadius = 0.3; // Initial thickness
+
+          // Function to create a tube between two points
+          function createTube(point1, point2, radius) {
+            const length = point1.distanceTo(point2);
+            const tubeGeometry = new THREE.CylinderGeometry(
+              radius,
+              radius,
+              length,
+              8
+            );
+
+            // Align the tube to the points
+            tubeGeometry.translate(0, 0, length / 2);
+            tubeGeometry.lookAt(point2.clone().sub(point1));
+
+            const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+
+            // Position the tube in the middle between the points
+            tubeMesh.position.copy(point1.clone().add(point2).multiplyScalar(0.5));
+            return tubeMesh;
+          }
+
+          // Create two points
+          const point1 = new THREE.Vector3(0, 0, 0);
+          const point2 = new THREE.Vector3(1, 2, 3);
+
+          // Add the tube to the scene
+          let tubeMesh = createTube(point1, point2, tubeRadius);
+          scene.add(tubeMesh);
+
+          // // Set camera position
+          // camera.position.z = 5;
+          //
+          // // Render loop
+          // function animate() {
+          //   requestAnimationFrame(animate);
+          //   renderer.render(scene, camera);
+          // }
 
 
 var deskObj;
-  function loadDesk()
+  function loadScreenAndKeys()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
     loader.load('obj/desk cartoon.glb',	function ( gltf )
     {
       // deskObj
       obj1 = gltf.scene;
+      console.log(obj1);
       // objGroup.add( obj1 );
       scene.add(obj1);
       deskObj = obj1;
       deskObjOutline = deskObj.clone();
-      outLineObj(deskObjOutline);
+      // outLineObj(deskObjOutline);
       scene.add(deskObjOutline);
       // outLineObj(deskObj);
 
@@ -126,7 +241,8 @@ scene.add(mouseGroup);
       // objGroup.add( obj1 );
       mouseGroup.add( obj1 );
       mouseObjOutline = mouseObj.clone();
-      outLineObj(mouseObjOutline);
+
+      // outLineObj(mouseObjOutline);
       // directionalLight.target = obj1;
       //
       // obj1.scale.set(0.3,0.3,0.3);
@@ -161,13 +277,13 @@ scene.add(mouseGroup);
 
 
           // Create a cube geometry
-          const geometry = new THREE.SphereGeometry();
-          // const geometry = new THREE.BoxGeometry();
-
-          // Create the normal material (base cube)
-          const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 }); // Green cube
-          const cube = new THREE.Mesh(geometry, material);
-          scene.add(cube);
+          // const geometry = new THREE.SphereGeometry();
+          // // const geometry = new THREE.BoxGeometry();
+          //
+          // // Create the normal material (base cube)
+          // const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 }); // Green cube
+          // const cube = new THREE.Mesh(geometry, material);
+          // scene.add(cube);
 
           // Create the outline material (using custom shaders)
           // const outlineMaterial = new THREE.ShaderMaterial({
@@ -202,13 +318,14 @@ scene.add(mouseGroup);
               side: THREE.BackSide // Render the outline behind the original geometry
           });
 
-          // Create a second mesh for the outline, using the same geometry but the outline material
-          const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
-          scene.add(outlineMesh);
-
-          // Set the cube position and rotation
-          cube.position.set(-3, 0, 0);
-          outlineMesh.position.set(-3, 0, 0); // Make sure the outline is in the same position
+          //
+          // // Create a second mesh for the outline, using the same geometry but the outline material
+          // const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
+          // scene.add(outlineMesh);
+          //
+          // // Set the cube position and rotation
+          // cube.position.set(-3, 0, 0);
+          // outlineMesh.position.set(-3, 0, 0); // Make sure the outline is in the same position
 
 
 
