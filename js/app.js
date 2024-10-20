@@ -55,7 +55,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // lightGroup.add( pointLight );
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
-  const ambLight = new THREE.AmbientLight( 0xffffff, 0.2);
+  const ambLight = new THREE.AmbientLight( 0xffffff, 1);
+  lightGroup.add( ambLight );
 
 
   //group for animation
@@ -88,7 +89,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   loadScreenAndKeys();
   // loadOutline();
   loadOutlineAsTubes();
-  // loudMouse();
+  loudMouse();
 
 
   // var outline;
@@ -223,7 +224,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
     // Function to create a tube between two points
       // function createTube(point1, point2, radius) {
-      function createTube(start, end, radius) {
+    function createTube(start, end, radius) {
         // const direction = new THREE.Vector3().subVectors(point2, point1); // Direction vector from start to end
         const direction = new THREE.Vector3().subVectors(end, start); // Direction vector from start to end
         const length = direction.length(); // Distance between start and end
@@ -289,7 +290,7 @@ scene.add(mouseGroup);
       //
       // obj1.scale.set(0.3,0.3,0.3);
       // mouseObj.position.set(-1.8,-0.2,1.5);
-      mouseObj.position.set(2,-0.2,-2);
+      mouseObj.position.set(2,0,-2);
       obj1.rotation.set(0,1.5,0);
 
     },    );
@@ -306,7 +307,8 @@ scene.add(mouseGroup);
 						texture.mapping = THREE.EquirectangularReflectionMapping;
             envMap = pmremGenerator.fromEquirectangular( texture ).texture;
 						// scene.background = envMap;
-						scene.environment = envMap;
+
+						// scene.environment = envMap;
 
 
 					} );
