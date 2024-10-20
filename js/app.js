@@ -271,20 +271,21 @@ var deskObj;
 
 var mouseObj;
 var mouseGroup = new THREE.Group();
-scene.add(mouseGroup);
+// scene.add(mouseGroup);
 
   function loudMouse()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
     loader.load('obj/mouse.glb',	function ( gltf )
     {
-      obj1 = gltf.scene;
+      // obj1 = gltf.scene;
       mouseObj = gltf.scene;
       console.log(mouseObj);
       // console.log(gltf);
       // scene.add( model );
       // objGroup.add( obj1 );
-      mouseGroup.add( obj1 );
+      mouseGroup.add( mouseObj );
+      objGroup.add(mouseGroup);
       mouseObjOutline = mouseObj.clone();
 
       // outLineObj(mouseObjOutline);
@@ -293,99 +294,11 @@ scene.add(mouseGroup);
       // obj1.scale.set(0.3,0.3,0.3);
       // mouseObj.position.set(-1.8,-0.2,1.5);
       mouseObj.position.set(2,0,-2);
-      obj1.rotation.set(0,1.5,0);
+      // obj1.rotation.set(0,1.5,0);
 
     },    );
   }
 
-
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-	renderer.toneMappingExposure = 1;
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  var envMap;
-  new RGBELoader().load( 'textures/royal_esplanade_1k.hdr', function ( texture ) {
-
-
-						texture.mapping = THREE.EquirectangularReflectionMapping;
-            envMap = pmremGenerator.fromEquirectangular( texture ).texture;
-						// scene.background = envMap;
-
-						// scene.environment = envMap;
-
-
-					} );
-
-
-
-
-
-
-
-
-          // Create a cube geometry
-          // const geometry = new THREE.SphereGeometry();
-          // // const geometry = new THREE.BoxGeometry();
-          //
-          // // Create the normal material (base cube)
-          // const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 }); // Green cube
-          // const cube = new THREE.Mesh(geometry, material);
-          // scene.add(cube);
-
-          // Create the outline material (using custom shaders)
-          // const outlineMaterial = new THREE.ShaderMaterial({
-          //     vertexShader: `
-          //         varying vec3 vNormal;
-          //         void main() {
-          //           vec4 mvPosition = modelViewMatrix * vec4(position * 1.02, 1.0); // Scale by 1.05 for outline
-          //           gl_Position = projectionMatrix * mvPosition;
-          //         }
-          //     `,
-          //     fragmentShader: `
-          //         void main() {
-          //             gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outline color
-          //         }
-          //     `,
-          //     side: THREE.BackSide // Render the outline behind the original geometry
-          // });
-          const outlineMaterial = new THREE.ShaderMaterial({
-              vertexShader: `
-                  varying vec3 vNormal;
-                  void main() {
-                      vNormal = normalize(normalMatrix * normal);
-                      vec3 newPosition = position + normal * 0.02;
-                      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-                  }
-              `,
-              fragmentShader: `
-                  void main() {
-                      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outline color
-                  }
-              `,
-              side: THREE.BackSide // Render the outline behind the original geometry
-          });
-
-          //
-          // // Create a second mesh for the outline, using the same geometry but the outline material
-          // const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
-          // scene.add(outlineMesh);
-          //
-          // // Set the cube position and rotation
-          // cube.position.set(-3, 0, 0);
-          // outlineMesh.position.set(-3, 0, 0); // Make sure the outline is in the same position
-
-
-
-
-function outLineObj(obj)
-{
-  // Traverse through the mouseObj to apply the material to all meshes
-  console.log('here');
-  obj.traverse((child) => {
-      if (child.isMesh) {
-          child.material = outlineMaterial; // Apply the material to each mesh
-      }
-  });
-}
 
 
 // const loader = new THREE.GLTFLoader();
@@ -427,9 +340,10 @@ function outLineObj(obj)
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = percentY * toRad(5);
-    let groupY = percentX * toRad(5);
+    let groupX = (percentY -0.5)* toRad(-1);
+    let groupY = (percentX -0.5) * toRad(2);
     objGroup.rotation.set(0, groupY, groupX);
+    objGroup.position.set(0, 0, percentX * 0.1);
 
 if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
 
@@ -437,8 +351,8 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     objToX = (percentX-0.5)*10;
     objToY = (percentY-0.5)*-2;
 
-    mouseToX = (percentY-0.5)*0.17;
-    mouseToZ = (percentX-0.5)*-0.1;
+    mouseToX = (percentY-0.5)*0.2;
+    mouseToZ = (percentX-0.5)*-0.13;
 
   }
 
