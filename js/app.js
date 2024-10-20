@@ -28,7 +28,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
     // scene.background = new THREE.Color( 0xff0000 );
 
   // const renderer = new THREE.WebGLRenderer();
-  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
   renderer.setSize( canvasWidth*window.innerWidth, window.innerHeight );
   document.body.appendChild( renderer.domElement );
 
@@ -86,7 +86,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let mouseObjOutline;
 
   loadScreenAndKeys();
-  loadOutline();
+  // loadOutline();
+  loadOutlineAsTubes();
   // loudMouse();
 
 
@@ -118,6 +119,28 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
         // objGroup.add( obj1 );
         scene.add(outline);
 
+
+        // outline.traverse(function (child) {
+        //     if (child.isLine) {
+        //   console.log("Line found: ", child);
+        //
+        //   // Modify the material of the line
+        //   const newMaterial = new THREE.LineBasicMaterial({
+        //     color: 0xff0000, // Set the color to red
+        //     linewidth: 5 // This property might only work in WebGL 2, be mindful of browser compatibility
+        //   });
+        //
+        //   // Apply the material to the line
+        //   child.material = newMaterial;
+        //
+        //   // Optionally create tubes along the line (if desired)
+        //   const tubeGeometry = new THREE.TubeGeometry(child.geometry, 20, 0.1, 8, false);
+        //   const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green tubes
+        //   const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+        //
+        //   // Add the tube to the scene
+        //   scene.add(tube);
+        // }});
 
         // outline = obj;
         //
@@ -160,47 +183,66 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
       }, );
     }
 
-    // / Dynamic tube thickness
-          let tubeRadius = 0.3; // Initial thickness
+    function loadOutlineAsTubes()
+    {
+      objLoader.load('obj/outline.obj',	function ( obj )
+      // objLoader.load('obj/cheeks.obj',	function ( obj )
+      {
+        console.log('outline: '+obj);
+        // Traverse through the object's geometry
+                obj.traverse(function (child) {
+                  if (child.isLine) {
+                    console.log('Line detected:', child);
 
-          // Function to create a tube between two points
-          function createTube(point1, point2, radius) {
-            const length = point1.distanceTo(point2);
-            const tubeGeometry = new THREE.CylinderGeometry(
-              radius,
-              radius,
-              length,
-              8
-            );
+                    const geometry = child.geometry;
+                    const vertices = geometry.attributes.position.array; // Get the vertices directly from the line
 
-            // Align the tube to the points
-            tubeGeometry.translate(0, 0, length / 2);
-            tubeGeometry.lookAt(point2.clone().sub(point1));
+                    // Loop through the vertices in pairs to create tubes along the line segments
+                    for (let i = 0; i < vertices.length; i += 6) {
+                      const start = new THREE.Vector3(
+                        vertices[i],
+                        vertices[i + 1],
+                        vertices[i + 2]
+                      );
+                      const end = new THREE.Vector3(
+                        vertices[i + 3],
+                        vertices[i + 4],
+                        vertices[i + 5]
+                      );
 
-            const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const tubeMesh = new THREE.Mesh(tubeGeometry, tubeMaterial);
+                      // Create a tube along the current line segment (from start to end)
+                      scene.add(createTube(start, end, lineThickness)); // Adjust tube radius as needed
+                    }
+                  }
+                  });
+        });
+    }
 
-            // Position the tube in the middle between the points
-            tubeMesh.position.copy(point1.clone().add(point2).multiplyScalar(0.5));
-            return tubeMesh;
-          }
+    let lineColor = 0x000000;
+    let lineThickness = 0.005;
 
-          // Create two points
-          const point1 = new THREE.Vector3(0, 0, 0);
-          const point2 = new THREE.Vector3(1, 2, 3);
+    // Function to create a tube between two points
+      // function createTube(point1, point2, radius) {
+      function createTube(start, end, radius) {
+        // const direction = new THREE.Vector3().subVectors(point2, point1); // Direction vector from start to end
+        const direction = new THREE.Vector3().subVectors(end, start); // Direction vector from start to end
+        const length = direction.length(); // Distance between start and end
 
-          // Add the tube to the scene
-          let tubeMesh = createTube(point1, point2, tubeRadius);
-          scene.add(tubeMesh);
+        // Create a cylinder with the correct length and radius
+        const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, length, 8, 1, false);
+        const cylinderMaterial = new THREE.MeshBasicMaterial({ color: lineColor });
 
-          // // Set camera position
-          // camera.position.z = 5;
-          //
-          // // Render loop
-          // function animate() {
-          //   requestAnimationFrame(animate);
-          //   renderer.render(scene, camera);
-          // }
+        const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+
+        // Align the cylinder with the line segment
+        const midPoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5); // Midpoint of the line
+        cylinder.position.copy(midPoint); // Position the cylinder at the midpoint
+
+        // Align the cylinder with the direction vector
+        cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize());
+
+        return cylinder;
+      }
 
 
 var deskObj;
