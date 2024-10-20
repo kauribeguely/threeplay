@@ -78,17 +78,30 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 
 
-
-
   var obj1;
-loadDesk();
+  let deskObjOutline;
+  let mouseObjOutline;
+
+  loadDesk();
+  loudMouse();
+
+
+
+
+
+var deskObj;
   function loadDesk()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
     loader.load('obj/desk cartoon.glb',	function ( gltf )
     {
+      // deskObj
       obj1 = gltf.scene;
       objGroup.add( obj1 );
+      deskObj = obj1;
+      deskObjOutline = deskObj.clone();
+      outLineObj(deskObjOutline, outlineMaterial);
+
 
     },    );
   }
@@ -97,7 +110,6 @@ var mouseObj;
 var mouseGroup = new THREE.Group();
 scene.add(mouseGroup);
 
-loudMouse();
   function loudMouse()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
@@ -110,6 +122,8 @@ loudMouse();
       // scene.add( model );
       // objGroup.add( obj1 );
       mouseGroup.add( obj1 );
+      mouseObjOutline = mouseObj.clone();
+      outLineObj(mouseObjOutline, outlineMaterial);
       // directionalLight.target = obj1;
       //
       // obj1.scale.set(0.3,0.3,0.3);
@@ -137,6 +151,85 @@ loudMouse();
 					} );
 
 
+
+
+
+
+
+
+          // Create a cube geometry
+          const geometry = new THREE.SphereGeometry();
+          // const geometry = new THREE.BoxGeometry();
+
+          // Create the normal material (base cube)
+          const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green cube
+          const cube = new THREE.Mesh(geometry, material);
+          scene.add(cube);
+
+          // Create the outline material (using custom shaders)
+          const outlineMaterial = new THREE.ShaderMaterial({
+              vertexShader: `
+                  varying vec3 vNormal;
+                  void main() {
+                      vNormal = normalize(normalMatrix * normal);
+                      vec3 newPosition = position + normal * 0.1;
+                      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                  }
+              `,
+              fragmentShader: `
+                  void main() {
+                      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outline color
+                  }
+              `,
+              side: THREE.BackSide // Render the outline behind the original geometry
+          });
+
+          // Create a second mesh for the outline, using the same geometry but the outline material
+          const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
+          scene.add(outlineMesh);
+
+          // Set the cube position and rotation
+          cube.position.set(0, 0, 0);
+          outlineMesh.position.set(0, 0, 0); // Make sure the outline is in the same position
+
+
+
+
+function outLineObj(obj, material)
+{
+  // Traverse through the mouseObj to apply the material to all meshes
+  obj.traverse((child) => {
+      if (child.isMesh) {
+          child.material = material; // Apply the material to each mesh
+      }
+  });
+}
+
+
+// const loader = new THREE.GLTFLoader();
+// loader.load('scene.gltf', function(gltf) {
+//     scene.add(gltf.scene);
+//
+//     // Select individual objects by name or path
+//     const objectToAnimate = gltf.scene.getObjectByName('ObjectNameInBlender');
+//
+//     // You can now animate objectToAnimate
+//     gsap.to(objectToAnimate.position, { x: 10, duration: 2 });
+// });
+
+
+
+// ____________________________________________________
+
+
+
+
+
+
+
+
+
+
   var percentX, percentY, mouseX, mouseY;
   var objToX = 0;
   var objToY = 0;
@@ -151,7 +244,7 @@ loudMouse();
     percentX = mouseX/window.innerWidth;
     percentY = mouseY/window.innerHeight;
 
-    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
+if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
 
 
     objToX = (percentX-0.5)*10;
