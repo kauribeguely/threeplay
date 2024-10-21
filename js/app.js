@@ -55,8 +55,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // lightGroup.add( pointLight );
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
-  const ambLight = new THREE.AmbientLight( 0xffffff, 1);
-  lightGroup.add( ambLight );
+  const ambLight = new THREE.AmbientLight( 0xffffff, 0.2);
+  // lightGroup.add( ambLight );
 
 
   //group for animation
@@ -86,9 +86,9 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let deskObjOutline;
   let mouseObjOutline;
 
-  loadScreenAndKeys();
+  // loadScreenAndKeys();
   // loadOutline();
-  loadOutlineAsTubes();
+  // loadOutlineAsTubes();
   loudMouse();
 
 
@@ -301,6 +301,22 @@ var mouseGroup = new THREE.Group();
 
 
 
+
+  var face;
+  loadFace();
+    function loadFace()
+    {
+      // loader.load('obj/face.glb',	function ( gltf )
+      // loader.load('obj/faceSmall.glb',	function ( gltf )
+      loader.load('obj/faceobj.glb',	function ( gltf )
+      {
+        face = gltf.scene;
+        objGroup.add( face );
+      },    );
+    }
+
+
+
 // const loader = new THREE.GLTFLoader();
 // loader.load('scene.gltf', function(gltf) {
 //     scene.add(gltf.scene);
@@ -340,8 +356,10 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = (percentY -0.5)* toRad(-1);
-    let groupY = (percentX -0.5) * toRad(2);
+    // let groupX = (percentY -0.5)* toRad(-1);
+    // let groupY = (percentX -0.5) * toRad(2);
+    let groupX = (percentY -0.5)* toRad(-10);
+    let groupY = (percentX -0.5) * toRad(10);
     objGroup.rotation.set(0, groupY, groupX);
     objGroup.position.set(0, 0, percentX * 0.1);
 
