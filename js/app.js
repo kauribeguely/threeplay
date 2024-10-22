@@ -57,7 +57,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // lightGroup.add( pointLight );
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
-  const ambLight = new THREE.AmbientLight( 0xffffff, 2);
+  const ambLight = new THREE.AmbientLight( 0xffffff, 0.6);
   lightGroup.add( ambLight );
 
 
@@ -88,11 +88,11 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let deskObjOutline;
   let mouseObjOutline;
 
-  // loadScreenAndKeys();
+  loadScreenAndKeys();
   // loadOutline();
-  // loadOutlineAsTubes();
-  // loudMouse();
-  loadFace();
+  loadOutlineAsTubes();
+  loudMouse();
+  // loadFace();
 
 
 
@@ -319,33 +319,34 @@ var mouseGroup = new THREE.Group();
         face.rotation.set(0, 2, 0)
         console.log(face);
         face = face.children[0];
-        if (face.morphTargetDictionary && face.morphTargetInfluences) {
-            console.log('Blend Shape Names and Values:');
-
-            // Loop through each morph target in the dictionary
-            for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
-              face.morphTargetInfluences[index] = Math.random();
-                // console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
-            }
-        } else {
-            console.log('No blend shapes (morph targets) found on this object.');
-        }
+        // if (face.morphTargetDictionary && face.morphTargetInfluences) {
+        //     console.log('Blend Shape Names and Values:');
+        //
+        //     // Loop through each morph target in the dictionary
+        //     for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
+        //       face.morphTargetInfluences[index] = Math.random();
+        //         console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
+        //     }
+        // } else {
+        //     console.log('No blend shapes (morph targets) found on this object.');
+        // }
         // face.position.set(0,0,-10);
       },    );
     }
 
-setInterval(function()
-{
-  if (face.morphTargetDictionary && face.morphTargetInfluences) {
-  console.log('Blend Shape Names and Values:');
-
-  // Loop through each morph target in the dictionary
-  for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
-    face.morphTargetInfluences[index] = Math.random();
-      // console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
-  }
-}
-}, 200);
+// setInterval(function()
+// {
+//   if (face.morphTargetDictionary && face.morphTargetInfluences) {
+//   // console.log('Blend Shape Names and Values:');
+//
+//   // Loop through each morph target in the dictionary
+//   for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
+//     face.morphTargetInfluences[index] = Math.random();
+//       // console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
+//   }
+//   ambLight.intensity = Math.random()*2;
+// }
+// }, 200);
 
 
 
