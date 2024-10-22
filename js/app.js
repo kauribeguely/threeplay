@@ -46,7 +46,9 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   // const directionalLight = new THREE.DirectionalLight( 0xffffff, 20 );
   const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+  // directionalLight.position.set(4, 0 ,0 );
   // lightGroup.add( directionalLight );
+  // lightGroup.position.set(0, 0 , 10 );
 
   // const pointLight = new THREE.PointLight( 0x9a458c , 3, 100 ); //darker purple
   const pointLight = new THREE.PointLight( 0xffffff , 0.5, 100 ); //darker purple
@@ -55,8 +57,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // lightGroup.add( pointLight );
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
-  const ambLight = new THREE.AmbientLight( 0xffffff, 0.2);
-  // lightGroup.add( ambLight );
+  const ambLight = new THREE.AmbientLight( 0xffffff, 2);
+  lightGroup.add( ambLight );
 
 
   //group for animation
@@ -89,7 +91,9 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // loadScreenAndKeys();
   // loadOutline();
   // loadOutlineAsTubes();
-  loudMouse();
+  // loudMouse();
+  loadFace();
+
 
 
   // var outline;
@@ -303,17 +307,45 @@ var mouseGroup = new THREE.Group();
 
 
   var face;
-  loadFace();
     function loadFace()
     {
       // loader.load('obj/face.glb',	function ( gltf )
       // loader.load('obj/faceSmall.glb',	function ( gltf )
-      loader.load('obj/faceobj.glb',	function ( gltf )
+      // loader.load('obj/faceobj.glb',	function ( gltf )
+      loader.load('obj/faceobjanim.glb',	function ( gltf )
       {
         face = gltf.scene;
         objGroup.add( face );
+        face.rotation.set(0, 2, 0)
+        console.log(face);
+        face = face.children[0];
+        if (face.morphTargetDictionary && face.morphTargetInfluences) {
+            console.log('Blend Shape Names and Values:');
+
+            // Loop through each morph target in the dictionary
+            for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
+              face.morphTargetInfluences[index] = Math.random();
+                // console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
+            }
+        } else {
+            console.log('No blend shapes (morph targets) found on this object.');
+        }
+        // face.position.set(0,0,-10);
       },    );
     }
+
+setInterval(function()
+{
+  if (face.morphTargetDictionary && face.morphTargetInfluences) {
+  console.log('Blend Shape Names and Values:');
+
+  // Loop through each morph target in the dictionary
+  for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
+    face.morphTargetInfluences[index] = Math.random();
+      // console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
+  }
+}
+}, 200);
 
 
 
@@ -356,12 +388,12 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
-    // let groupX = (percentY -0.5)* toRad(-1);
-    // let groupY = (percentX -0.5) * toRad(2);
-    let groupX = (percentY -0.5)* toRad(-10);
-    let groupY = (percentX -0.5) * toRad(10);
+    let groupX = (percentY -0.5)* toRad(-0.5);
+    let groupY = (percentX -0.5) * toRad(0.5);
+    // let groupX = (percentY -0.5)* toRad(-10);
+    // let groupY = (percentX -0.5) * toRad(10);
     objGroup.rotation.set(0, groupY, groupX);
-    objGroup.position.set(0, 0, percentX * 0.1);
+    // objGroup.position.set(0, 0, percentX * 0.1);
 
 if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
 
