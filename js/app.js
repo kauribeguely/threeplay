@@ -57,7 +57,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // lightGroup.add( pointLight );
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
-  const ambLight = new THREE.AmbientLight( 0xffffff, 0.6);
+  const ambLight = new THREE.AmbientLight( 0xffffff, 1);
   lightGroup.add( ambLight );
 
 
@@ -88,13 +88,13 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let deskObjOutline;
   let mouseObjOutline;
 
-  loadScreenAndKeys();
+  // loadScreenAndKeys();
+  // loadOutlineAsTubes();
+  // loudMouse();
+
+
   // loadOutline();
-  loadOutlineAsTubes();
-  loudMouse();
   // loadFace();
-
-
 
   // var outline;
   //   function loadOutline()
@@ -273,6 +273,77 @@ var deskObj;
     },    );
   }
 
+
+  var phone;
+  let row = new THREE.Group();
+  row.position.set(0, 1, 0);
+  scene.add(row);
+
+  let row2 = new THREE.Group();
+  row2.position.set(0, 2, 0);
+  scene.add(row2);
+
+  loadPhone();
+  function loadPhone()
+  {
+    // loader.load('obj/deskcartoon.glb',	function ( gltf )
+    loader.load('obj/phone.glb',	function ( gltf )
+    {
+      // deskObj
+      phone = gltf.scene;
+      // console.log(phone);
+      phone.scale.set(0.2, 0.2, 0.2);
+      objGroup.add( phone );
+      // rowLoop(30);
+      randomAllLoop(phone, 1000);
+      // loopCreate(phone, 40, [0, 0, 1], objGroup);
+      // phone.position.set(0, 1, 0);
+
+      // loopCreate(phone, 40, [0, 0, 1], row);
+
+      // loopCreate(phone, 40, [0, 0, 1], row2);
+
+
+    },    );
+  }
+
+  function rowLoop(rowCount)
+  {
+    for(let i = 0; i < rowCount; i++)
+    {
+      let row = new THREE.Group();
+      let center = i - (0.5*rowCount);
+      row.position.set(0, center, center);
+      // scene.add(row);
+      objGroup.add(row);
+      loopCreate(phone, 40, [0, 0, 0.5], row);
+
+    }
+
+  }
+
+  function randomAllLoop(object, loopCount)
+  {
+    for(let i = 0; i < loopCount; i++)
+    {
+      let clone = object.clone();
+      // let center = i - (0.5*loopCount);
+      let randomX = (Math.random()-0.5)*20;
+      let randomY = (Math.random()-0.5)*20;
+      let randomZ = (Math.random()-0.5)*20;
+      clone.position.set(randomX, randomY, randomZ);
+
+      let randomXR = toRad((Math.random()-0.5)*180);
+      let randomYR = toRad((Math.random()-0.5)*180);
+      let randomZR = toRad((Math.random()-0.5)*180);
+      clone.rotation.set(randomXR, randomYR, randomZR);
+
+      let randomScale = (Math.random()-0.5)*0.5;
+      // clone.scale.set(randomScale, randomScale, randomScale);
+      objGroup.add(clone);
+    }
+  }
+
 var mouseObj;
 var mouseGroup = new THREE.Group();
 // scene.add(mouseGroup);
@@ -389,8 +460,10 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = (percentY -0.5)* toRad(-0.5);
-    let groupY = (percentX -0.5) * toRad(0.5);
+    let groupX = (percentY -0.5)* toRad(-40);
+    let groupY = (percentX -0.5) * toRad(40);
+    // let groupX = (percentY -0.5)* toRad(-0.5);
+    // let groupY = (percentX -0.5) * toRad(0.5);
     // let groupX = (percentY -0.5)* toRad(-10);
     // let groupY = (percentX -0.5) * toRad(10);
     objGroup.rotation.set(0, groupY, groupX);
@@ -428,9 +501,36 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
   }
 
 
+  function loopCreate(loopObject, loopCount, spaceArray, group)
+  {
+    //todo, dont loop inside a template
+    // let addToDiv = activeDiv;
+    // let loopCount = 20;
+    for(let i = 0; i < loopCount; i++)
+    {
+      let centerMath = i-(0.5*loopCount);
+      // let centerMath = i/loopCount;
+      // let centerMath = i-(0.5*loopCount) * Math.sin()) +1;
+      // centerMath = Math.sin(toRad(centerMath * 360)) + 1;
+      let y = Math.sin(toRad(2*i/loopCount * 360))*2;
+      console.log('calc: '+centerMath);
+      // activeDiv = addToDiv; //should be the first one
+      // activeDivObj = null;
+      // addObj(loopObject);
+      let loopedObject = loopObject.clone();
+      // selectedObj.position[0] = i * 20;
+      // loopedObject.position.set(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
+      loopedObject.position.set(y, centerMath * spaceArray[1], centerMath * spaceArray[2]);
+      // selectedObj.setPosition(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
+      group.add(loopedObject);
+    }
+  }
+
+
   let activateAnimation = false;
   let delta, perSecond;
   let timeLastFrame = new Date().getTime();
+  let rot = 0;
   function animate()
   {
   	requestAnimationFrame( animate );
@@ -448,6 +548,10 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     let mouseSpeed = delta /100;
     mouseGroup.position.x = mouseGroup.position.x + (distmouseX * mouseSpeed);
     mouseGroup.position.z = mouseGroup.position.z + (distmousez * mouseSpeed);
+
+    //auto rotate obj group
+    // rot += perSecond * toRad(180);
+    // objGroup.rotation.set(0, rot, 0);
 
 
     // pTeal.lookAt(camera.position);
