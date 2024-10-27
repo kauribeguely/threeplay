@@ -46,8 +46,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   // const directionalLight = new THREE.DirectionalLight( 0xffffff, 20 );
   const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  // directionalLight.position.set(4, 0 ,0 );
-  // lightGroup.add( directionalLight );
+  directionalLight.position.set(4, 0 ,0 );
+  lightGroup.add( directionalLight );
   // lightGroup.position.set(0, 0 , 10 );
 
   // const pointLight = new THREE.PointLight( 0x9a458c , 3, 100 ); //darker purple
@@ -58,7 +58,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
   const ambLight = new THREE.AmbientLight( 0xffffff, 1);
-  lightGroup.add( ambLight );
+  // lightGroup.add( ambLight );
 
 
   //group for animation
@@ -294,8 +294,8 @@ var deskObj;
       // console.log(phone);
       phone.scale.set(0.2, 0.2, 0.2);
       objGroup.add( phone );
-      // rowLoop(30);
-      randomAllLoop(phone, 1000);
+      rowLoop(30);
+      // randomAllLoop(phone, 1000);
       // loopCreate(phone, 40, [0, 0, 1], objGroup);
       // phone.position.set(0, 1, 0);
 
@@ -316,7 +316,7 @@ var deskObj;
       row.position.set(0, center, center);
       // scene.add(row);
       objGroup.add(row);
-      loopCreate(phone, 40, [0, 0, 0.5], row);
+      loopCreate(phone, 100, [0, 0, 0.5], row);
 
     }
 
@@ -460,7 +460,7 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = (percentY -0.5)* toRad(-40);
+    let groupX = (percentY -0.5)* toRad(-90);
     let groupY = (percentX -0.5) * toRad(40);
     // let groupX = (percentY -0.5)* toRad(-0.5);
     // let groupY = (percentX -0.5) * toRad(0.5);
@@ -512,7 +512,7 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       // let centerMath = i/loopCount;
       // let centerMath = i-(0.5*loopCount) * Math.sin()) +1;
       // centerMath = Math.sin(toRad(centerMath * 360)) + 1;
-      let y = Math.sin(toRad(2*i/loopCount * 360))*2;
+      let y = Math.sin(toRad(4*i/loopCount * 360))*2;
       console.log('calc: '+centerMath);
       // activeDiv = addToDiv; //should be the first one
       // activeDivObj = null;
