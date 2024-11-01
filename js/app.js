@@ -294,7 +294,7 @@ var deskObj;
       // console.log(phone);
       phone.scale.set(0.2, 0.2, 0.2);
       objGroup.add( phone );
-      rowLoop(30);
+      rowLoop(phone, 30);
       // randomAllLoop(phone, 1000);
       // loopCreate(phone, 40, [0, 0, 1], objGroup);
       // phone.position.set(0, 1, 0);
@@ -307,7 +307,13 @@ var deskObj;
     },    );
   }
 
-  function rowLoop(rowCount)
+
+//   const geometry = new THREE.SphereGeometry( 0.1, 16, 8 );
+// const material = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
+// const sphere = new THREE.Mesh( geometry, material ); scene.add( sphere );
+// rowLoop(sphere, 30);
+
+  function rowLoop(object, rowCount)
   {
     for(let i = 0; i < rowCount; i++)
     {
@@ -316,7 +322,7 @@ var deskObj;
       row.position.set(0, center, center);
       // scene.add(row);
       objGroup.add(row);
-      loopCreate(phone, 100, [0, 0, 0.5], row);
+      loopCreate(object, 100, [0, 0, 0.5], row);
 
     }
 
