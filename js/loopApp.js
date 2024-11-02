@@ -5,6 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { TextureLoader } from 'three';
 
   const canvasWidth = 1;
   var showPhone = true;
@@ -536,7 +537,7 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       let y = centerMath * spaceArray[0];
 
 
-      console.log('calc: '+centerMath);
+      // console.log('calc: '+centerMath);
       // activeDiv = addToDiv; //should be the first one
       // activeDivObj = null;
       // addObj(loopObject);
@@ -549,6 +550,74 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     }
   }
 
+
+  // Rounded square shape
+  const shape = new THREE.Shape();
+  const radius = 0.2;
+  const width = 2;
+  const height = 2;
+
+  shape.moveTo(-width / 2 + radius, -height / 2);
+  shape.lineTo(width / 2 - radius, -height / 2);
+  shape.quadraticCurveTo(width / 2, -height / 2, width / 2, -height / 2 + radius);
+  shape.lineTo(width / 2, height / 2 - radius);
+  shape.quadraticCurveTo(width / 2, height / 2, width / 2 - radius, height / 2);
+  shape.lineTo(-width / 2 + radius, height / 2);
+  shape.quadraticCurveTo(-width / 2, height / 2, -width / 2, height / 2 - radius);
+  shape.lineTo(-width / 2, -height / 2 + radius);
+  shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2 + radius, -height / 2);
+
+  // Extrude settings
+  const extrudeSettings = {
+    depth: 0.2,          // Thin extrusion
+    bevelEnabled: false, // No bevel for clean edges
+  };
+
+  // Create geometry
+  const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
+
+  const frontTexture = new THREE.TextureLoader().load('test.png');
+  // console.log(frontTexture);
+  // frontTexture.wrapS = THREE.ClampToEdgeWrapping;
+  // frontTexture.wrapT = THREE.ClampToEdgeWrapping;
+  frontTexture.center.set(0.5, 0.5); // Set the center to middle of texture
+  frontTexture.rotation = Math.PI; // Rotate 180° if needed
+  frontTexture.offset.set(-0.25, -0.25); // Adjust offset to move it into the center
+  // frontTexture.repeat.set(1.5, 1.5); // Scale if necessary
+  // // Modify the UVs to stretch the texture across the full front face
+  // geometry.faceVertexUvs[0].forEach((uvFace, i) => {
+  //   uvFace.forEach((uv) => {
+  //     uv.x = (uv.x + 1) / 2; // Scale x to fit within 0-1 range
+  //     uv.y = (uv.y + 1) / 2; // Scale y to fit within 0-1 range
+  //   });
+  // });
+  // Materials for front face and sides
+  const sideMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 }); // Or any color
+  const frontMaterial = new THREE.MeshBasicMaterial({ map: frontTexture });
+
+  // Mesh with dynamic materials
+  const materials = [frontMaterial, sideMaterial];
+  const extrudedMesh = new THREE.Mesh(geometry, materials);
+
+  // Change texture dynamically
+  function updateFrontTexture(newTexture) {
+    frontMaterial.map = newTexture;
+    frontMaterial.needsUpdate = true;
+  }
+
+  // Change side color dynamically
+  function updateSideColor(newColor) {
+    sideMaterial.color.set(newColor);
+    sideMaterial.needsUpdate = true;
+  }
+
+  // Add mesh to scene
+  scene.add(extrudedMesh);
+
+
+
+//__________ANIMATION________________
 
   let activateAnimation = false;
   let delta, perSecond;
