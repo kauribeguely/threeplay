@@ -12,7 +12,10 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   const loader = new GLTFLoader();
   const objLoader = new OBJLoader();
 
-  const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
+  // const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
+  const camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
+  // const camera = new THREE.OrthographicCamera( window.innerWidth, window.innerWidth, window.innerHeight, window.innerHeight, 1, 1000 );
+  // scene.add(camera );
   // camera.position.z = 5;
   // Set the camera position
   camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
@@ -47,7 +50,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // const directionalLight = new THREE.DirectionalLight( 0xffffff, 20 );
   const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.position.set(4, 0 ,0 );
-  lightGroup.add( directionalLight );
+  // lightGroup.add( directionalLight );
   // lightGroup.position.set(0, 0 , 10 );
 
   // const pointLight = new THREE.PointLight( 0x9a458c , 3, 100 ); //darker purple
@@ -58,7 +61,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
   const ambLight = new THREE.AmbientLight( 0xffffff, 1);
-  // lightGroup.add( ambLight );
+  lightGroup.add( ambLight );
 
 
   //group for animation
@@ -88,8 +91,10 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let deskObjOutline;
   let mouseObjOutline;
 
-  // loadScreenAndKeys();
-  // loadOutlineAsTubes();
+  let outlineGroup = new THREE.Group();
+
+  loadScreenAndKeys();
+  loadOutlineAsTubes();
   // loudMouse();
 
 
@@ -190,6 +195,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
     function loadOutlineAsTubes()
     {
+
       objLoader.load('obj/outline.obj',	function ( obj )
       // objLoader.load('obj/cheeks.obj',	function ( obj )
       {
@@ -217,16 +223,21 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
                       // Create a tube along the current line segment (from start to end)
                       // scene.add(createTube(start, end, lineThickness)); // Adjust tube radius as needed
-                      objGroup.add( createTube(start, end, lineThickness));
-
+                      // objGroup.add( createTube(start, end, lineThickness));
+                      outlineGroup.add( createTube(start, end, lineThickness));
                     }
                   }
-                  });
+                });//end traverse
+                outlineGroup.scale.set(0.2,0.2,0.2);
+                rowLoop(outlineGroup, 10);
+
+                objGroup.add( outlineGroup);
+
         });
     }
 
     let lineColor = 0x000000;
-    let lineThickness = 0.005;
+    let lineThickness = 0.01;
 
     // Function to create a tube between two points
       // function createTube(point1, point2, radius) {
@@ -260,8 +271,10 @@ var deskObj;
     {
       // deskObj
       deskObj = gltf.scene;
-      console.log(deskObj);
+      deskObj.scale.set(0.2, 0.2, 0.2);
+      // console.log(deskObj);
       objGroup.add( deskObj );
+      rowLoop(deskObj, 10);
       // scene.add(deskObj);
       // deskObj = obj1;
       // deskObjOutline = deskObj.clone();
@@ -322,7 +335,8 @@ var deskObj;
       row.position.set(0, center, center);
       // scene.add(row);
       objGroup.add(row);
-      loopCreate(object, 100, [0, 0, 0.5], row);
+      loopCreate(object, 10, [0, 0, 1], row);
+      // loopCreate(object, 100, [0, 0, 0.5], row);
 
     }
 
@@ -518,7 +532,10 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       // let centerMath = i/loopCount;
       // let centerMath = i-(0.5*loopCount) * Math.sin()) +1;
       // centerMath = Math.sin(toRad(centerMath * 360)) + 1;
-      let y = Math.sin(toRad(4*i/loopCount * 360))*2;
+      // let y = Math.sin(toRad(4*i/loopCount * 360))*2;
+      let y = centerMath * spaceArray[0];
+
+
       console.log('calc: '+centerMath);
       // activeDiv = addToDiv; //should be the first one
       // activeDivObj = null;
