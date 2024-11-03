@@ -48,11 +48,18 @@ import { TextureLoader } from 'three';
   // lightGroup.position.z = 1;
   scene.add(lightGroup);
 
-  // const directionalLight = new THREE.DirectionalLight( 0xffffff, 20 );
-  const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  directionalLight.position.set(4, 0 ,0 );
+  // // const directionalLight = new THREE.DirectionalLight( 0xffffff, 20 );
+  // const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+  // directionalLight.position.set(4, 0 ,0 );
+  // lightGroup.add( directionalLight );
+  // // lightGroup.position.set(0, 0 , 10 );
+
+
+  // Directional Light similar to Blender's default (sun-like light)
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // Adjust intensity as needed
+  directionalLight.position.set(5, 10, 7.5); // Position the light at an angle
+  directionalLight.castShadow = true; // Enable shadows if needed
   lightGroup.add( directionalLight );
-  // lightGroup.position.set(0, 0 , 10 );
 
   // const pointLight = new THREE.PointLight( 0x9a458c , 3, 100 ); //darker purple
   const pointLight = new THREE.PointLight( 0xffffff , 0.5, 100 ); //darker purple
@@ -78,10 +85,63 @@ import { TextureLoader } from 'three';
   lightGroup.position.z = -1;
 
 
-  const screenTexturePath = './textures/loftop.jpg';
-  const laptopTexturePath = './textures/loftop.jpg';
-  const phoneTexturePath = './textures/loftop.jpg';
+  const compositions = {
+    composition1: {
+    screen: { position: [-0.038, 3.332, 0.545], rotation: [1.57, 0.099, -1.568] },
+    laptop: { position: [2.162, 2.305, -4.329], rotation: [0, 0, 0] },
+    tablet: { position: [16.353, -10.017, 27.942], rotation: [0, 0, 0] },
+    mobile: { position: [4.277, 2.058, -8.191], rotation: [0, 0, 0] },
+    camera: { position: [17.6, 10.1, -0.85], rotation: [-1.712, 1.146, 1.725] }
+    },
+    composition2: {
+      screen: { position: [-0.038, 3.33, 0.545], rotation: [1.57, 0.099, -1.568] },
+      laptop: { position: [4.614, 2.348, 4.103], rotation: [0, 0, 0] },
+      tablet: { position: [4.897, 2.343, -2.391], rotation: [0, 0, 0] },
+      mobile: { position: [4.832, 1.711, -5.84], rotation: [0, 0, 0] },
+      camera: { position: [25.4, 15.677, -16.23], rotation: [-2.538, 0.798, 2.683] }
+    },
+    composition3: {
+      screen: { position: [-0.038, 3.332, 0.545], rotation: [1.57, 0.099, -1.568] },
+      laptop: { position: [6.589, 2.348, 6.758], rotation: [0, 1.571, 0] },
+      tablet: { position: [5.771, 0.225, -0.749], rotation: [0, 0, 1.571] },
+      mobile: { position: [3.31, 0.12, -3.884], rotation: [0, 0, 1.571] },
+      camera: { position: [25.4, 15.677, -16.23], rotation: [-2.538, 0.798, 2.683] }
+  }
+
+
+  }
+
+
+  function applyComposition(objects, compositionName) {
+    const composition = compositions[compositionName];
+    if (!composition) {
+        console.error(`Composition ${compositionName} not found.`);
+        return;
+    }
+
+    // Apply transformations to each object
+    for (const objectName in composition) {
+        if (objects[objectName]) {
+            const { position, rotation, scale } = composition[objectName];
+            objects[objectName].position.set(...position);
+            objects[objectName].rotation.set(...rotation);
+            // objects[objectName].scale.set(...scale);
+        } else {
+            console.warn(`Object ${objectName} not found in the scene.`);
+        }
+    }
+}
+
+
+const objects = {};
+
+
+  const screenTexturePath = './textures/lofhero.jpg';
+  const laptopTexturePath = './textures/lofhero.jpg';
   const tabletTexturePath = './textures/loftop.jpg';
+  const phoneTexturePath = './textures/lofmob.jpg';
+
+  var deviceMaterial;
 
   var fullCompScene;
   var phone, laptop, screen, tablet;
@@ -89,8 +149,9 @@ import { TextureLoader } from 'three';
   function loadComposition()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
-    // loader.load('obj/comp1.glb',	function ( gltf )
-    loader.load('obj/isoDevice.glb',	function ( gltf )
+    // loader.load('obj/isoDevice.glb',	function ( gltf )
+    // loader.load('obj/test.glb',	function ( gltf )
+    loader.load('obj/comp2.glb',	function ( gltf )
     {
       // deskObj
       fullCompScene = gltf.scene;
@@ -99,14 +160,7 @@ import { TextureLoader } from 'three';
 
       objGroup.add( fullCompScene );
 
-      // rowLoop(deskObj, 10);
-      // scene.add(deskObj);
-      // deskObj = obj1;
-      // deskObjOutline = deskObj.clone();
-      // outLineObj(deskObjOutline);
-      // scene.add(deskObjOutline);
-      // outLineObj(deskObj);
-      // scene.add(gltf.cameras[0]);
+      // rowLoop(fullCompScene, 10);
       camera = gltf.cameras[0];
       camera.updateProjectionMatrix();
 
@@ -123,14 +177,31 @@ import { TextureLoader } from 'three';
       laptop = gltf.scene.getObjectByName('LaptopGroup');
       phone = gltf.scene.getObjectByName('PhoneGroup');
       tablet = gltf.scene.getObjectByName('TabletGroup');
+
+      objects.screen = screen;
+      objects.laptop = laptop;
+      objects.mobile = phone;
+      objects.tablet = tablet;
+      objects.camera = camera;
+
+      // Apply composition1 to all objects
+
+      // Later on, you can switch to another composition
+      // applyComposition(objects, 'composition2');
+
+      deviceMaterial = screen.children[0].material;
       // phone.position.set(0, 0, 1);
 
       // objGroup.add(screen);
       // objGroup.add(laptop);
       // objGroup.add(phone);
-      console.log('screenpos'+screen.position);
-      console.log(screen.position.toArray()); // Output: [x, y, z]
+      // console.log('screenpos'+screen.position);
+      console.log('screen pos'+ screen.position.toArray()); // Output: [x, y, z]
+      console.log('screen rot'+ screen.rotation.toArray()); // Output: [x, y, z]
       console.log(screen);
+
+
+      // applyComposition(objects, 'composition1');
 
 
           applyTextureToMaterial(screen, 'screenMat', screenTexturePath);
@@ -138,25 +209,49 @@ import { TextureLoader } from 'three';
           applyTextureToMaterial(phone, 'phoneMat', phoneTexturePath);
           applyTextureToMaterial(tablet, 'tabletMat', tabletTexturePath);
 
-      gltf.scene.traverse(function (child) {
-       // Check if the child is a Mesh
-         if (child.isMesh) {
-             // Check if the child has materials
-             if (child.material) {
-                 // If the material is an array (multiple materials)
-                 const materials = Array.isArray(child.material) ? child.material : [child.material];
-
-                 materials.forEach((material) => {
-                      // Log the name of the mesh and the name of the material
-                      console.log(`Object: ${child.name}, Material: ${material.name}`);
-                  });
-             }
-         }
-     });
+     //  gltf.scene.traverse(function (child) {
+     //   // Check if the child is a Mesh
+     //     if (child.isMesh) {
+     //         // Check if the child has materials
+     //         if (child.material) {
+     //             // If the material is an array (multiple materials)
+     //             const materials = Array.isArray(child.material) ? child.material : [child.material];
+     //
+     //             materials.forEach((material) => {
+     //                  // Log the name of the mesh and the name of the material
+     //                  console.log(`Object: ${child.name}, Material: ${material.name}`);
+     //              });
+     //         }
+     //     }
+     // });
       // screen.position.set(1, 0, 0);  // Example: move the screen to a new position
+
+
+      // Create the transforms object
+      const transforms = {
+          screen: getTransforms(screen),
+          laptop: getTransforms(laptop),
+          tablet: getTransforms(tablet),
+          mobile: getTransforms(phone),
+          camera: getTransforms(camera)
+      };
+
+      // Output the result
+      console.log(transforms);
 
     },    ); //END LOAD
   }
+
+
+  // Function to retrieve position and rotation
+function getTransforms(obj) {
+    return {
+        position: [obj.position.x, obj.position.y, obj.position.z],
+        rotation: [obj.rotation.x, obj.rotation.y, obj.rotation.z]
+    };
+}
+
+
 
 
 
@@ -170,6 +265,7 @@ import { TextureLoader } from 'three';
             texture.repeat.set(1, -1); // Flip on both X and Y by setting repeat to -1
             console.log(object.children[1].name);
 
+            // TODO: split textured materials in blender so can find by name instead of child location
             object.children[1].material.map = loadedTexture;
             object.children[1].material.needsUpdate = true;
 
@@ -188,18 +284,31 @@ import { TextureLoader } from 'three';
           });
       }
 
+      // Reference to the color picker element
+      const colorPicker = document.getElementById('colorPicker');
+
+      // Event listener for the color picker
+      colorPicker.addEventListener('input', (event) => {
+          // Get the selected color value from the picker
+          const color = event.target.value;
+
+          // Update the material color (setHex converts hex color string to a format Three.js can use)
+          deviceMaterial.color.set(color);
+      });
 
 
+let rowSpace = 5;
+let columnSpace = 20;
   function rowLoop(object, rowCount)
   {
     for(let i = 0; i < rowCount; i++)
     {
       let row = new THREE.Group();
-      let center = i - (0.5*rowCount);
+      let center = i - (rowSpace*rowCount);
       row.position.set(0, center, center);
       // scene.add(row);
       objGroup.add(row);
-      loopCreate(object, 10, [0, 0, 1], row);
+      loopCreate(object, 10, [0, 0, columnSpace], row);
       // loopCreate(object, 100, [0, 0, 0.5], row);
 
     }
@@ -245,8 +354,8 @@ import { TextureLoader } from 'three';
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = (percentY -0.5)* toRad(-20);
-    let groupY = (percentX -0.5) * toRad(20);
+    let groupX = (percentY -0.5)* toRad(-6);
+    let groupY = (percentX -0.5) * toRad(6);
     // let groupX = (percentY -0.5)* toRad(-0.5);
     // let groupY = (percentX -0.5) * toRad(0.5);
     // let groupX = (percentY -0.5)* toRad(-10);
@@ -333,3 +442,28 @@ import { TextureLoader } from 'three';
   	renderer.render( scene, camera );
   }
   animate();
+
+
+
+  document.onkeydown = function(evt)
+  {
+    console.log(evt.key);
+
+    switch(evt.key)
+    {
+      case " ":
+        console.log(camera.position);
+        break;
+      case "1":
+        applyComposition(objects, 'composition1');
+        break;
+      case "2":
+        applyComposition(objects, 'composition2');
+        break;
+      case "3":
+        applyComposition(objects, 'composition'+evt.key);
+        break;
+
+
+    }
+  }
