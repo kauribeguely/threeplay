@@ -13,8 +13,10 @@ import { TextureLoader } from 'three';
   const loader = new GLTFLoader();
   const objLoader = new OBJLoader();
 
+  const orthographicAdapt = 1000;
+
   // const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
-  const camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
+  const camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
   // const camera = new THREE.OrthographicCamera( window.innerWidth, window.innerWidth, window.innerHeight, window.innerHeight, 1, 1000 );
   // scene.add(camera );
   // camera.position.z = 5;
@@ -117,6 +119,26 @@ import { TextureLoader } from 'three';
   //
   //     },    );
   //   }
+
+
+let box;
+loadJeight();
+  function loadJeight()
+  {
+    // loader.load('obj/deskcartoon.glb',	function ( gltf )
+    loader.load('obj/jeightbox.glb',	function ( gltf )
+    {
+      // deskObj
+      box = gltf.scene;
+      // box.scale.set(0.2, 0.2, 0.2);
+      // console.log(deskObj);
+      objGroup.add( box );
+      // rowLoop(box, 10);
+    });
+  }
+
+
+
   var outline;
     function loadOutline()
     {
@@ -230,6 +252,7 @@ import { TextureLoader } from 'three';
                   }
                 });//end traverse
                 outlineGroup.scale.set(0.2,0.2,0.2);
+                outlineGroup.scale.set(0.2,0.2,0.2);
                 rowLoop(outlineGroup, 10);
 
                 objGroup.add( outlineGroup);
@@ -263,6 +286,22 @@ import { TextureLoader } from 'three';
         return cylinder;
       }
 
+      function logCameraInfo() {
+          console.log(`Camera Position: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}`);
+          console.log(`Camera Zoom: ${controls.object.zoom}`); // If you're using zoom, otherwise can ignore
+      }
+
+      // Event listener for scroll
+      window.addEventListener('wheel', (event) => {
+          // Prevent default scrolling
+          event.preventDefault();
+
+          // Update orbit controls
+          controls.update();
+
+          // Log camera info
+          // logCameraInfo();
+      });
 
 var deskObj;
   function loadScreenAndKeys()
@@ -551,70 +590,73 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
   }
 
 
-  // Rounded square shape
-  const shape = new THREE.Shape();
-  const radius = 0.2;
-  const width = 2;
-  const height = 2;
+//___START ROUNDED RECTANGLE____
 
-  shape.moveTo(-width / 2 + radius, -height / 2);
-  shape.lineTo(width / 2 - radius, -height / 2);
-  shape.quadraticCurveTo(width / 2, -height / 2, width / 2, -height / 2 + radius);
-  shape.lineTo(width / 2, height / 2 - radius);
-  shape.quadraticCurveTo(width / 2, height / 2, width / 2 - radius, height / 2);
-  shape.lineTo(-width / 2 + radius, height / 2);
-  shape.quadraticCurveTo(-width / 2, height / 2, -width / 2, height / 2 - radius);
-  shape.lineTo(-width / 2, -height / 2 + radius);
-  shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2 + radius, -height / 2);
+  // // Rounded square shape
+  // const shape = new THREE.Shape();
+  // const radius = 0.2;
+  // const width = 2;
+  // const height = 2;
+  //
+  // shape.moveTo(-width / 2 + radius, -height / 2);
+  // shape.lineTo(width / 2 - radius, -height / 2);
+  // shape.quadraticCurveTo(width / 2, -height / 2, width / 2, -height / 2 + radius);
+  // shape.lineTo(width / 2, height / 2 - radius);
+  // shape.quadraticCurveTo(width / 2, height / 2, width / 2 - radius, height / 2);
+  // shape.lineTo(-width / 2 + radius, height / 2);
+  // shape.quadraticCurveTo(-width / 2, height / 2, -width / 2, height / 2 - radius);
+  // shape.lineTo(-width / 2, -height / 2 + radius);
+  // shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2 + radius, -height / 2);
+  //
+  // // Extrude settings
+  // const extrudeSettings = {
+  //   depth: 0.2,          // Thin extrusion
+  //   bevelEnabled: false, // No bevel for clean edges
+  // };
+  //
+  // // Create geometry
+  // const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  //
+  //
+  // const frontTexture = new THREE.TextureLoader().load('test.png');
+  // // console.log(frontTexture);
+  // // frontTexture.wrapS = THREE.ClampToEdgeWrapping;
+  // // frontTexture.wrapT = THREE.ClampToEdgeWrapping;
+  // frontTexture.center.set(0.5, 0.5); // Set the center to middle of texture
+  // frontTexture.rotation = Math.PI; // Rotate 180° if needed
+  // frontTexture.offset.set(-0.25, -0.25); // Adjust offset to move it into the center
+  // // frontTexture.repeat.set(1.5, 1.5); // Scale if necessary
+  // // // Modify the UVs to stretch the texture across the full front face
+  // // geometry.faceVertexUvs[0].forEach((uvFace, i) => {
+  // //   uvFace.forEach((uv) => {
+  // //     uv.x = (uv.x + 1) / 2; // Scale x to fit within 0-1 range
+  // //     uv.y = (uv.y + 1) / 2; // Scale y to fit within 0-1 range
+  // //   });
+  // // });
+  // // Materials for front face and sides
+  // const sideMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 }); // Or any color
+  // const frontMaterial = new THREE.MeshBasicMaterial({ map: frontTexture });
+  //
+  // // Mesh with dynamic materials
+  // const materials = [frontMaterial, sideMaterial];
+  // const extrudedMesh = new THREE.Mesh(geometry, materials);
+  //
+  // // Change texture dynamically
+  // function updateFrontTexture(newTexture) {
+  //   frontMaterial.map = newTexture;
+  //   frontMaterial.needsUpdate = true;
+  // }
+  //
+  // // Change side color dynamically
+  // function updateSideColor(newColor) {
+  //   sideMaterial.color.set(newColor);
+  //   sideMaterial.needsUpdate = true;
+  // }
+  //
+  // // Add mesh to scene
+  // scene.add(extrudedMesh);
 
-  // Extrude settings
-  const extrudeSettings = {
-    depth: 0.2,          // Thin extrusion
-    bevelEnabled: false, // No bevel for clean edges
-  };
-
-  // Create geometry
-  const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-
-
-  const frontTexture = new THREE.TextureLoader().load('test.png');
-  // console.log(frontTexture);
-  // frontTexture.wrapS = THREE.ClampToEdgeWrapping;
-  // frontTexture.wrapT = THREE.ClampToEdgeWrapping;
-  frontTexture.center.set(0.5, 0.5); // Set the center to middle of texture
-  frontTexture.rotation = Math.PI; // Rotate 180° if needed
-  frontTexture.offset.set(-0.25, -0.25); // Adjust offset to move it into the center
-  // frontTexture.repeat.set(1.5, 1.5); // Scale if necessary
-  // // Modify the UVs to stretch the texture across the full front face
-  // geometry.faceVertexUvs[0].forEach((uvFace, i) => {
-  //   uvFace.forEach((uv) => {
-  //     uv.x = (uv.x + 1) / 2; // Scale x to fit within 0-1 range
-  //     uv.y = (uv.y + 1) / 2; // Scale y to fit within 0-1 range
-  //   });
-  // });
-  // Materials for front face and sides
-  const sideMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 }); // Or any color
-  const frontMaterial = new THREE.MeshBasicMaterial({ map: frontTexture });
-
-  // Mesh with dynamic materials
-  const materials = [frontMaterial, sideMaterial];
-  const extrudedMesh = new THREE.Mesh(geometry, materials);
-
-  // Change texture dynamically
-  function updateFrontTexture(newTexture) {
-    frontMaterial.map = newTexture;
-    frontMaterial.needsUpdate = true;
-  }
-
-  // Change side color dynamically
-  function updateSideColor(newColor) {
-    sideMaterial.color.set(newColor);
-    sideMaterial.needsUpdate = true;
-  }
-
-  // Add mesh to scene
-  scene.add(extrudedMesh);
-
+//__ END ROUNDED RECTANGLE
 
 
 //__________ANIMATION________________

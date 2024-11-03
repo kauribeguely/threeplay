@@ -74,8 +74,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   dotGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0,0,0]), 3));
   const dotMaterial = new THREE.PointsMaterial({ size: 0.1, color: 0xff0000 });
 
-  const lightDot = new THREE.Points(dotGeometry, dotMaterial);
-  lightGroup.add( lightDot );
+  // const lightDot = new THREE.Points(dotGeometry, dotMaterial);
+  // lightGroup.add( lightDot );
   lightGroup.position.y = 4;
   lightGroup.position.z = -1;
 
@@ -283,7 +283,7 @@ var deskObj;
   row2.position.set(0, 2, 0);
   scene.add(row2);
 
-  // loadPhone();
+  loadPhone();
   function loadPhone()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
@@ -308,10 +308,10 @@ var deskObj;
   }
 
 
-//   const geometry = new THREE.SphereGeometry( 0.1, 16, 8 );
-// const material = new THREE.MeshStandardMaterial( { color: 0xffff00 } );
-// const sphere = new THREE.Mesh( geometry, material ); scene.add( sphere );
-// rowLoop(sphere, 30);
+  const geometry = new THREE.SphereGeometry( 1, 16, 16 );
+const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+const sphere = new THREE.Mesh( geometry, material ); scene.add( sphere );
+rowLoop(sphere, 30);
 
   function rowLoop(object, rowCount)
   {
