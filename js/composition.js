@@ -12,19 +12,21 @@ import { TextureLoader } from 'three';
   // const loader = new THREE.GLTFLoader();
   const loader = new GLTFLoader();
   const objLoader = new OBJLoader();
+  const textureLoader = new THREE.TextureLoader();
 
-  const orthographicAdapt = 1000;
+  const orthographicAdapt = 500;
 
   // const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
-  const camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
+  // const camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
+  var camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
   // const camera = new THREE.OrthographicCamera( window.innerWidth, window.innerWidth, window.innerHeight, window.innerHeight, 1, 1000 );
   // scene.add(camera );
   // camera.position.z = 5;
   // Set the camera position
-  camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
+  // camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
 
   // Set the camera rotation
-  camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
+  // camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
 
   // camera.position.y = 1;
 
@@ -34,13 +36,13 @@ import { TextureLoader } from 'three';
     // scene.background = new THREE.Color( 0xff0000 );
 
   // const renderer = new THREE.WebGLRenderer();
-  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  const renderer = new THREE.WebGLRenderer({ alpha: true , antialias: true });
   renderer.setSize( canvasWidth*window.innerWidth, window.innerHeight );
   document.body.appendChild( renderer.domElement );
 
-  const controls = new OrbitControls( camera, renderer.domElement );
-  controls.enableDamping = true;
-  controls.update();
+  // const controls = new OrbitControls( camera, renderer.domElement );
+  // controls.enableDamping = true;
+  // controls.update();
 
   const lightGroup = new THREE.Group();
   // lightGroup.position.z = 1;
@@ -59,7 +61,7 @@ import { TextureLoader } from 'three';
   // lightGroup.add( pointLight );
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
-  const ambLight = new THREE.AmbientLight( 0xffffff, 0.3);
+  const ambLight = new THREE.AmbientLight( 0xffffff, 0.5);
   lightGroup.add( ambLight );
 
 
@@ -76,20 +78,27 @@ import { TextureLoader } from 'three';
   lightGroup.position.z = -1;
 
 
+  const screenTexturePath = './textures/loftop.jpg';
+  const laptopTexturePath = './textures/loftop.jpg';
+  const phoneTexturePath = './textures/loftop.jpg';
+  const tabletTexturePath = './textures/loftop.jpg';
 
   var fullCompScene;
-  var phone, laptop, screen;
+  var phone, laptop, screen, tablet;
   loadComposition();
   function loadComposition()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
-    loader.load('obj/comp1.glb',	function ( gltf )
+    // loader.load('obj/comp1.glb',	function ( gltf )
+    loader.load('obj/isoDevice.glb',	function ( gltf )
     {
       // deskObj
       fullCompScene = gltf.scene;
       // deskObj.scale.set(0.2, 0.2, 0.2);
       // console.log(deskObj);
+
       objGroup.add( fullCompScene );
+
       // rowLoop(deskObj, 10);
       // scene.add(deskObj);
       // deskObj = obj1;
@@ -97,15 +106,87 @@ import { TextureLoader } from 'three';
       // outLineObj(deskObjOutline);
       // scene.add(deskObjOutline);
       // outLineObj(deskObj);
+      // scene.add(gltf.cameras[0]);
+      camera = gltf.cameras[0];
+      camera.updateProjectionMatrix();
 
-      screen = gltf.scene.getObjectByName('Screen');
-      laptop = gltf.scene.getObjectByName('Laptop');
-      phone = gltf.scene.getObjectByName('Phone');
+
+
+      objGroup.remove(camera); // Remove camera from the group
+        scene.add(camera); // Add camera directly to the scene
+
+      const  controls = new OrbitControls( camera, renderer.domElement );
+        controls.enableDamping = true;
+        controls.update();
+
+      screen = gltf.scene.getObjectByName('ScreenGroup');
+      laptop = gltf.scene.getObjectByName('LaptopGroup');
+      phone = gltf.scene.getObjectByName('PhoneGroup');
+      tablet = gltf.scene.getObjectByName('TabletGroup');
+      // phone.position.set(0, 0, 1);
+
+      // objGroup.add(screen);
+      // objGroup.add(laptop);
+      // objGroup.add(phone);
       console.log('screenpos'+screen.position);
+      console.log(screen.position.toArray()); // Output: [x, y, z]
       console.log(screen);
 
-    },    );
+
+          applyTextureToMaterial(screen, 'screenMat', screenTexturePath);
+          applyTextureToMaterial(laptop, 'laptopMat', laptopTexturePath);
+          applyTextureToMaterial(phone, 'phoneMat', phoneTexturePath);
+          applyTextureToMaterial(tablet, 'tabletMat', tabletTexturePath);
+
+      gltf.scene.traverse(function (child) {
+       // Check if the child is a Mesh
+         if (child.isMesh) {
+             // Check if the child has materials
+             if (child.material) {
+                 // If the material is an array (multiple materials)
+                 const materials = Array.isArray(child.material) ? child.material : [child.material];
+
+                 materials.forEach((material) => {
+                      // Log the name of the mesh and the name of the material
+                      console.log(`Object: ${child.name}, Material: ${material.name}`);
+                  });
+             }
+         }
+     });
+      // screen.position.set(1, 0, 0);  // Example: move the screen to a new position
+
+    },    ); //END LOAD
   }
+
+
+
+
+  // Function to apply texture to specified material
+      function applyTextureToMaterial(object, materialName, texturePath) {
+          const texture = textureLoader.load(texturePath, function (loadedTexture) {
+
+            texture.wrapS = THREE.RepeatWrapping; // Allow wrapping in the S (horizontal) direction
+            texture.wrapT = THREE.RepeatWrapping; // Allow wrapping in the T (vertical) direction
+            texture.repeat.set(1, -1); // Flip on both X and Y by setting repeat to -1
+            console.log(object.children[1].name);
+
+            object.children[1].material.map = loadedTexture;
+            object.children[1].material.needsUpdate = true;
+
+              // Loop through the materials of the object
+              // if (object && object.material) {
+                  // Check if material is an array or a single material
+                  // const materials = Array.isArray(object.material) ? object.material : [object.material];
+                  //
+                  // materials.forEach((material) => {
+                  //     if (material.name === materialName) {
+                  //         material.map = loadedTexture; // Set the texture
+                  //         material.needsUpdate = true; // Inform Three.js to update the material
+                  //     }
+                  // });
+              // }
+          });
+      }
 
 
 
