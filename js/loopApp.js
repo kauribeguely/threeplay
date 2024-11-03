@@ -520,8 +520,8 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = (percentY -0.5)* toRad(-90);
-    let groupY = (percentX -0.5) * toRad(40);
+    let groupX = (percentY -0.5)* toRad(-5);
+    let groupY = (percentX -0.5) * toRad(5);
     // let groupX = (percentY -0.5)* toRad(-0.5);
     // let groupY = (percentX -0.5) * toRad(0.5);
     // let groupX = (percentY -0.5)* toRad(-10);
