@@ -86,30 +86,43 @@ import { TextureLoader } from 'three';
 
 
   const compositions = {
-    composition1: {
-    screen: { position: [-0.038, 3.332, 0.545], rotation: [1.57, 0.099, -1.568] },
-    laptop: { position: [2.162, 2.305, -4.329], rotation: [0, 0, 0] },
-    tablet: { position: [16.353, -10.017, 27.942], rotation: [0, 0, 0] },
-    mobile: { position: [4.277, 2.058, -8.191], rotation: [0, 0, 0] },
-    camera: { position: [17.6, 10.1, -0.85], rotation: [-1.712, 1.146, 1.725] }
-    },
-    composition2: {
-      screen: { position: [-0.038, 3.33, 0.545], rotation: [1.57, 0.099, -1.568] },
-      laptop: { position: [4.614, 2.348, 4.103], rotation: [0, 0, 0] },
-      tablet: { position: [4.897, 2.343, -2.391], rotation: [0, 0, 0] },
-      mobile: { position: [4.832, 1.711, -5.84], rotation: [0, 0, 0] },
-      camera: { position: [25.4, 15.677, -16.23], rotation: [-2.538, 0.798, 2.683] }
-    },
-    composition3: {
+      composition1: {
       screen: { position: [-0.038, 3.332, 0.545], rotation: [1.57, 0.099, -1.568] },
-      laptop: { position: [6.589, 2.348, 6.758], rotation: [0, 1.571, 0] },
-      tablet: { position: [5.771, 0.225, -0.749], rotation: [0, 0, 1.571] },
-      mobile: { position: [3.31, 0.12, -3.884], rotation: [0, 0, 1.571] },
-      camera: { position: [25.4, 15.677, -16.23], rotation: [-2.538, 0.798, 2.683] }
-  }
+      laptop: { position: [2.162, 2.305, -4.329], rotation: [0, 0, 0] },
+      tablet: { position: [16.353, -10.017, 27.942], rotation: [0, 0, 0] },
+      mobile: { position: [4.277, 2.058, -8.191], rotation: [0, 0, 0] },
+      camera: { position: [17.6, 10.1, -0.85], rotation: [-1.712, 1.146, 1.725] }
+      },
+      composition2: {
+        screen: { position: [-0.038, 3.33, 0.545], rotation: [1.57, 0.099, -1.568] },
+        laptop: { position: [4.614, 2.348, 4.103], rotation: [0, 0, 0] },
+        tablet: { position: [4.897, 2.343, -2.391], rotation: [0, 0, 0] },
+        mobile: { position: [4.832, 1.711, -5.84], rotation: [0, 0, 0] },
+        camera: { position: [25.4, 15.677, -16.23], rotation: [-2.538, 0.798, 2.683] }
+      },
+      composition3: {
+        screen: { position: [-0.038, 3.332, 0.545], rotation: [1.57, 0.099, -1.568] },
+        laptop: { position: [6.589, 2.348, 6.758], rotation: [0, 1.571, 0] },
+        tablet: { position: [5.771, 0.225, -0.749], rotation: [0, 0, 1.571] },
+        mobile: { position: [3.31, 0.12, -3.884], rotation: [0, 0, 1.571] },
+        camera: { position: [25.4, 15.677, -16.23], rotation: [-2.538, 0.798, 2.683] }
+    },
+    composition4: {
+        screen: { position: [-0.038, 3.332, 0.545], rotation: [1.57, 0.099, -1.568] },
+        laptop: { position: [1.059, 2.348, -6.216], rotation: [0, 0, 0] },
+        tablet: { position: [4.897, -10.076, -2.391], rotation: [0, 0, 0] },
+        mobile: { position: [4.832, -10.708, -5.840], rotation: [0, 0, 0] },
+        camera: { position: [25.4, 15.677, -16.23], rotation: [-2.538, 0.798, 2.683] }
+    },
+    composition5: {
+      screen: { position: [100,100,100], rotation: [1.57, 0.099, -1.568] },
+      laptop: { position: [-2.179, 2.348, 4.103], rotation: [0, 0, 0] },
+      tablet: { position: [0.652, 0.172, -2.391], rotation: [0, 0, 1.571] },
+      mobile: { position: [4.859, 0.16, 2.125], rotation: [1.571, 1.571, 0] },
+      camera: { position: [11.149, 14.66, -8.341], rotation: [-2.088, 0.584, 2.372] }
 
-
-  }
+    }
+  }//END COMPOSITIONS
 
 
   function applyComposition(objects, compositionName) {
@@ -149,9 +162,9 @@ const objects = {};
   function loadComposition()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
-    // loader.load('obj/isoDevice.glb',	function ( gltf )
+    loader.load('obj/isoDevice.glb',	function ( gltf )
     // loader.load('obj/test.glb',	function ( gltf )
-    loader.load('obj/comp2.glb',	function ( gltf )
+    // loader.load('obj/comp2.glb',	function ( gltf )
     {
       // deskObj
       fullCompScene = gltf.scene;
@@ -189,22 +202,24 @@ const objects = {};
       // Later on, you can switch to another composition
       // applyComposition(objects, 'composition2');
 
-      deviceMaterial = screen.children[0].material;
+      if(screen)  deviceMaterial = screen.children[0].material;
+
       // phone.position.set(0, 0, 1);
 
       // objGroup.add(screen);
       // objGroup.add(laptop);
       // objGroup.add(phone);
       // console.log('screenpos'+screen.position);
-      console.log('screen pos'+ screen.position.toArray()); // Output: [x, y, z]
-      console.log('screen rot'+ screen.rotation.toArray()); // Output: [x, y, z]
-      console.log(screen);
+
+      // console.log('screen pos'+ screen.position.toArray()); // Output: [x, y, z]
+      // console.log('screen rot'+ screen.rotation.toArray()); // Output: [x, y, z]
+      // console.log(screen);
 
 
       // applyComposition(objects, 'composition1');
 
 
-          applyTextureToMaterial(screen, 'screenMat', screenTexturePath);
+          if(screen) applyTextureToMaterial(screen, 'screenMat', screenTexturePath);
           applyTextureToMaterial(laptop, 'laptopMat', laptopTexturePath);
           applyTextureToMaterial(phone, 'phoneMat', phoneTexturePath);
           applyTextureToMaterial(tablet, 'tabletMat', tabletTexturePath);
@@ -228,6 +243,16 @@ const objects = {};
 
 
       // Create the transforms object
+      // const transforms = {
+      //     screen: getTransforms(screen),
+      //     laptop: getTransforms(laptop),
+      //     tablet: getTransforms(tablet),
+      //     mobile: getTransforms(phone),
+      //     camera: getTransforms(camera)
+      // };
+
+
+      //for printing purposes
       const transforms = {
           screen: getTransforms(screen),
           laptop: getTransforms(laptop),
@@ -452,7 +477,7 @@ let columnSpace = 20;
     switch(evt.key)
     {
       case " ":
-        console.log(camera.position);
+        console.log(camera.position.toArray() +" rot:"+ camera.rotation.toArray());
         break;
       case "1":
         applyComposition(objects, 'composition1');
@@ -461,6 +486,15 @@ let columnSpace = 20;
         applyComposition(objects, 'composition2');
         break;
       case "3":
+        applyComposition(objects, 'composition'+evt.key);
+        break;
+      case "4":
+        applyComposition(objects, 'composition'+evt.key);
+        break;
+      case "5":
+        applyComposition(objects, 'composition'+evt.key);
+        break;
+      case "6":
         applyComposition(objects, 'composition'+evt.key);
         break;
 
