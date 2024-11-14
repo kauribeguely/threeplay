@@ -18,7 +18,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   // camera.position.z = 5;
   // Set the camera position
-  camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
+  // camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
+  camera.position.set(-7, 6.8, 5.5);
   //
   // // Set the camera rotation
   // camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
@@ -67,12 +68,16 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   scene.add(objGroup);
 
   const wow2LoopGroup = new THREE.Group();
-  wow2LoopGroup.position.set(5, 0, 0);
+  wow2LoopGroup.position.set(3.2, 0, 0);
   objGroup.add(wow2LoopGroup);
+
+  const wow2LoopGroup2 = new THREE.Group();
+  wow2LoopGroup2.position.set(-6.4, 0, 0);
+  objGroup.add(wow2LoopGroup2);
   // scene.add(wow2LoopGroup);
 
   const wow3LoopGroup = new THREE.Group();
-  wow3LoopGroup.position.set(10, 0, 0);
+  wow3LoopGroup.position.set(-3.2, 0, 0);
   objGroup.add(wow3LoopGroup);
   // scene.add(wow3LoopGroup);
   // objGroup.position.y =-0.2;
@@ -199,14 +204,23 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
                 // setTimeout(() => randomAllWithOutline(wow2, singleLineGroup, 33), 1000);
                 // setTimeout(() => randomAllWithOutline(wow3, singleLineGroup, 33), 1000);
 
-                loopCreate(wow, 40, [0, 0, 1], objGroup);
-                loopCreate(singleLineGroup, 40, [0, 0, 1], objGroup);
+                let loopCount = 20;
+                let zDist = 1.2;
 
-                loopCreate(wow2, 40, [0, 0, 1], wow2LoopGroup);
-                loopCreate(singleLineGroup, 40, [0, 0, 1], wow2LoopGroup);
+                setTimeout(() =>
+                {
+                  loopCreate(wow, loopCount, [0, 0, zDist], objGroup);
+                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], objGroup);
 
-                loopCreate(wow3, 40, [0, 0, 1], wow3LoopGroup);
-                loopCreate(singleLineGroup, 40, [0, 0, 1], wow3LoopGroup);
+                  loopCreate(wow2, loopCount, [0, 0, zDist], wow2LoopGroup);
+                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], wow2LoopGroup);
+
+                  loopCreate(wow2, loopCount, [0, 0, zDist], wow2LoopGroup2);
+                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], wow2LoopGroup2);
+
+                  loopCreate(wow3, loopCount, [0, 0, zDist], wow3LoopGroup);
+                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], wow3LoopGroup);
+                }, 500);
 
               }
             });
@@ -288,12 +302,13 @@ let wow3MainColorMat, wow3SideColorMat;
         if (child.isMesh) {
           if (child.material.name === 'mainColor') {
             mainColorMat = child.material;
+            mainColorMat.emissive.set(0xff9500);
           } else if (child.material.name === 'sideColor') {
             sideColorMat = child.material;
+            sideColorMat.emissive.set(addShade(0xff9500));
           }
           // console.log('Main Color Material:', mainColorMat);
           // console.log('Side Color Material:', sideColorMat);
-          mainColorMat.emissive.set(0xff0000);
         }
       });
 
@@ -303,11 +318,11 @@ let wow3MainColorMat, wow3SideColorMat;
                if (child.material.name === 'mainColor') {
                    child.material = child.material.clone();
                    wow2MainColorMat = child.material;
-                   wow2MainColorMat.emissive.set(0x0000ff); // Initial color for wow2 main
+                   wow2MainColorMat.emissive.set(0xA80000); // Initial color for wow2 main
                } else if (child.material.name === 'sideColor') {
                    child.material = child.material.clone();
                    wow2SideColorMat = child.material;
-                   wow2SideColorMat.emissive.set(0xffff00); // Initial color for wow2 side
+                   wow2SideColorMat.emissive.set(addShade(0xA80000));
                }
            }
        });
@@ -318,11 +333,11 @@ let wow3MainColorMat, wow3SideColorMat;
                if (child.material.name === 'mainColor') {
                    child.material = child.material.clone();
                    wow3MainColorMat = child.material;
-                   wow3MainColorMat.emissive.set(0xff00ff); // Initial color for wow3 main
+                   wow3MainColorMat.emissive.set(0x051a7f); // Initial color for wow3 main
                } else if (child.material.name === 'sideColor') {
                    child.material = child.material.clone();
                    wow3SideColorMat = child.material;
-                   wow3SideColorMat.emissive.set(0x00ffff); // Initial color for wow3 side
+                   wow3SideColorMat.emissive.set(addShade(0x051a7f));
                }
            }
        });
@@ -393,7 +408,7 @@ let wow3MainColorMat, wow3SideColorMat;
       // let centerMath = i-(0.5*loopCount) * Math.sin()) +1;
       // centerMath = Math.sin(toRad(centerMath * 360)) + 1;
 
-      // let y = Math.sin(toRad(4*i/loopCount * 360))*2;
+      let y = Math.sin(toRad(2*i/loopCount * 360));
       // let y =
 
 
@@ -407,6 +422,7 @@ let wow3MainColorMat, wow3SideColorMat;
 
       // loopedObject.position.set(y, centerMath * spaceArray[1], centerMath * spaceArray[2]);
       loopedObject.position.set(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
+      // loopedObject.position.set(centerMath * spaceArray[0], y, centerMath * spaceArray[2]);
 
       // selectedObj.setPosition(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
       group.add(loopedObject);
@@ -505,9 +521,17 @@ let wow3MainColorMat, wow3SideColorMat;
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = percentY * toRad(5);
-    let groupY = percentX * toRad(5);
-    objGroup.rotation.set(0, groupY, groupX);
+    let groupX = percentY * toRad(3);
+    let groupY = percentX * toRad(-3);
+    // objGroup.rotation.set(0, groupY, groupX);
+
+
+    objGroup.position.set(0, 0, percentX);
+    wow2LoopGroup.position.set(3.2, 0, percentX*3);
+    wow3LoopGroup.position.set(-3.2, 0, percentX*-3);
+    wow2LoopGroup2.position.set(-6.4, 0, percentX*2);
+
+
 
 // if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
 
