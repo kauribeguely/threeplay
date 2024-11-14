@@ -65,6 +65,16 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   //group for animation
   const objGroup = new THREE.Group();
   scene.add(objGroup);
+
+  const wow2LoopGroup = new THREE.Group();
+  wow2LoopGroup.position.set(5, 0, 0);
+  objGroup.add(wow2LoopGroup);
+  // scene.add(wow2LoopGroup);
+
+  const wow3LoopGroup = new THREE.Group();
+  wow3LoopGroup.position.set(10, 0, 0);
+  objGroup.add(wow3LoopGroup);
+  // scene.add(wow3LoopGroup);
   // objGroup.position.y =-0.2;
 
 
@@ -155,42 +165,51 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
       {
         // console.log('outline: '+obj);
         // Traverse through the object's geometry
-                obj.traverse(function (child) {
-                  if (child.isLine) {
-                    console.log('Line detected:', child);
+            obj.traverse(function (child)
+            {
+              if (child.isLine) {
+                console.log('Line detected:', child);
 
-                    const geometry = child.geometry;
-                    const vertices = geometry.attributes.position.array; // Get the vertices directly from the line
+                const geometry = child.geometry;
+                const vertices = geometry.attributes.position.array; // Get the vertices directly from the line
 
-                    // Loop through the vertices in pairs to create tubes along the line segments
-                    for (let i = 0; i < vertices.length; i += 6) {
-                      const start = new THREE.Vector3(
-                        vertices[i],
-                        vertices[i + 1],
-                        vertices[i + 2]
-                      );
-                      const end = new THREE.Vector3(
-                        vertices[i + 3],
-                        vertices[i + 4],
-                        vertices[i + 5]
-                      );
+                // Loop through the vertices in pairs to create tubes along the line segments
+                for (let i = 0; i < vertices.length; i += 6) {
+                  const start = new THREE.Vector3(
+                    vertices[i],
+                    vertices[i + 1],
+                    vertices[i + 2]
+                  );
+                  const end = new THREE.Vector3(
+                    vertices[i + 3],
+                    vertices[i + 4],
+                    vertices[i + 5]
+                  );
 
-                      // Create a tube along the current line segment (from start to end)
-                      // scene.add(createTube(start, end, lineThickness)); // Adjust tube radius as needed
-                      singleLineGroup.add( createTube(start, end, lineThickness));
+                  // Create a tube along the current line segment (from start to end)
+                  // scene.add(createTube(start, end, lineThickness)); // Adjust tube radius as needed
+                  singleLineGroup.add( createTube(start, end, lineThickness));
 
-                    }
+                }
 
-                    // randomAllLoop(singleLineGroup, 100);
-                    objGroup.add(singleLineGroup);
-                    setTimeout(() => randomAllWithOutline(wow, singleLineGroup, 33), 1000);
-                    setTimeout(() => randomAllWithOutline(wow2, singleLineGroup, 33), 1000);
-                    setTimeout(() => randomAllWithOutline(wow3, singleLineGroup, 33), 1000);
+                // randomAllLoop(singleLineGroup, 100);
+                objGroup.add(singleLineGroup);
 
+                // setTimeout(() => randomAllWithOutline(wow, singleLineGroup, 33), 1000);
+                // setTimeout(() => randomAllWithOutline(wow2, singleLineGroup, 33), 1000);
+                // setTimeout(() => randomAllWithOutline(wow3, singleLineGroup, 33), 1000);
 
-                    
-                  }
-                  });
+                loopCreate(wow, 40, [0, 0, 1], objGroup);
+                loopCreate(singleLineGroup, 40, [0, 0, 1], objGroup);
+
+                loopCreate(wow2, 40, [0, 0, 1], wow2LoopGroup);
+                loopCreate(singleLineGroup, 40, [0, 0, 1], wow2LoopGroup);
+
+                loopCreate(wow3, 40, [0, 0, 1], wow3LoopGroup);
+                loopCreate(singleLineGroup, 40, [0, 0, 1], wow3LoopGroup);
+
+              }
+            });
         });
     }
 
@@ -274,7 +293,7 @@ let wow3MainColorMat, wow3SideColorMat;
           }
           // console.log('Main Color Material:', mainColorMat);
           // console.log('Side Color Material:', sideColorMat);
-          mainColorMat.color.set(0xff0000);
+          mainColorMat.emissive.set(0xff0000);
         }
       });
 
@@ -284,11 +303,11 @@ let wow3MainColorMat, wow3SideColorMat;
                if (child.material.name === 'mainColor') {
                    child.material = child.material.clone();
                    wow2MainColorMat = child.material;
-                   wow2MainColorMat.color.set(0x0000ff); // Initial color for wow2 main
+                   wow2MainColorMat.emissive.set(0x0000ff); // Initial color for wow2 main
                } else if (child.material.name === 'sideColor') {
                    child.material = child.material.clone();
                    wow2SideColorMat = child.material;
-                   wow2SideColorMat.color.set(0xffff00); // Initial color for wow2 side
+                   wow2SideColorMat.emissive.set(0xffff00); // Initial color for wow2 side
                }
            }
        });
@@ -299,11 +318,11 @@ let wow3MainColorMat, wow3SideColorMat;
                if (child.material.name === 'mainColor') {
                    child.material = child.material.clone();
                    wow3MainColorMat = child.material;
-                   wow3MainColorMat.color.set(0xff00ff); // Initial color for wow3 main
+                   wow3MainColorMat.emissive.set(0xff00ff); // Initial color for wow3 main
                } else if (child.material.name === 'sideColor') {
                    child.material = child.material.clone();
                    wow3SideColorMat = child.material;
-                   wow3SideColorMat.color.set(0x00ffff); // Initial color for wow3 side
+                   wow3SideColorMat.emissive.set(0x00ffff); // Initial color for wow3 side
                }
            }
        });
@@ -359,6 +378,41 @@ let wow3MainColorMat, wow3SideColorMat;
       objGroup.add(lineClone);
     }
   }
+
+
+
+  function loopCreate(loopObject, loopCount, spaceArray, group)
+  {
+    //todo, dont loop inside a template
+    // let addToDiv = activeDiv;
+    // let loopCount = 20;
+    for(let i = 0; i < loopCount; i++)
+    {
+      let centerMath = i-(0.5*loopCount);
+      // let centerMath = i/loopCount;
+      // let centerMath = i-(0.5*loopCount) * Math.sin()) +1;
+      // centerMath = Math.sin(toRad(centerMath * 360)) + 1;
+
+      // let y = Math.sin(toRad(4*i/loopCount * 360))*2;
+      // let y =
+
+
+      console.log('calc: '+centerMath);
+      // activeDiv = addToDiv; //should be the first one
+      // activeDivObj = null;
+      // addObj(loopObject);
+      let loopedObject = loopObject.clone();
+      // selectedObj.position[0] = i * 20;
+      // loopedObject.position.set(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
+
+      // loopedObject.position.set(y, centerMath * spaceArray[1], centerMath * spaceArray[2]);
+      loopedObject.position.set(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
+
+      // selectedObj.setPosition(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
+      group.add(loopedObject);
+    }
+  }
+
 
 
 
