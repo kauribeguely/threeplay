@@ -11,14 +11,17 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   // const loader = new THREE.GLTFLoader();
   const loader = new GLTFLoader();
   const objLoader = new OBJLoader();
+  const orthographicAdapt = 100;
 
-  const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
+  // const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
+  var camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
+
   // camera.position.z = 5;
   // Set the camera position
   camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
-
-  // Set the camera rotation
-  camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
+  //
+  // // Set the camera rotation
+  // camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
 
   // camera.position.y = 1;
 
@@ -46,9 +49,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   // const directionalLight = new THREE.DirectionalLight( 0xffffff, 20 );
   const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  directionalLight.position.set(4, 0 ,0 );
-  lightGroup.add( directionalLight );
-  // lightGroup.position.set(0, 0 , 10 );
+  // lightGroup.add( directionalLight );
 
   // const pointLight = new THREE.PointLight( 0x9a458c , 3, 100 ); //darker purple
   const pointLight = new THREE.PointLight( 0xffffff , 0.5, 100 ); //darker purple
@@ -58,7 +59,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
   const ambLight = new THREE.AmbientLight( 0xffffff, 1);
-  // lightGroup.add( ambLight );
+  lightGroup.add( ambLight );
 
 
   //group for animation
@@ -89,12 +90,19 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   let mouseObjOutline;
 
   // loadScreenAndKeys();
+  // loadOutline();
+
+  loadWow();
+
+  let singleLineGroup = new THREE.Group();
+
   // loadOutlineAsTubes();
+
+
+
+
   // loudMouse();
 
-
-  // loadOutline();
-  // loadFace();
 
   // var outline;
   //   function loadOutline()
@@ -125,38 +133,6 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
         scene.add(outline);
 
 
-        // outline.traverse(function (child) {
-        //     if (child.isLine) {
-        //   console.log("Line found: ", child);
-        //
-        //   // Modify the material of the line
-        //   const newMaterial = new THREE.LineBasicMaterial({
-        //     color: 0xff0000, // Set the color to red
-        //     linewidth: 5 // This property might only work in WebGL 2, be mindful of browser compatibility
-        //   });
-        //
-        //   // Apply the material to the line
-        //   child.material = newMaterial;
-        //
-        //   // Optionally create tubes along the line (if desired)
-        //   const tubeGeometry = new THREE.TubeGeometry(child.geometry, 20, 0.1, 8, false);
-        //   const tubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green tubes
-        //   const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
-        //
-        //   // Add the tube to the scene
-        //   scene.add(tube);
-        // }});
-
-        // outline = obj;
-        //
-        // // Create edges from the object geometry
-        // const edges = new THREE.EdgesGeometry(outline.geometry);
-        // const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }); // Change color as needed
-        // const lineSegments = new THREE.LineSegments(edges, lineMaterial);
-        //
-        // // Add the lines to the scene
-        // scene.add(lineSegments);
-
 
         const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Change color as needed
         outline.traverse((child) => {
@@ -166,31 +142,15 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
                 child.material = lineMaterial; // Apply the new material
             // }
         });
-
-        // let clone1 = outline.clone();
-        // clone1.position.set(.001, 0, 0);
-        // let clone2 = outline.clone();
-        // clone1.position.set(.002, 0, 0);
-        // // clone2.position.set(0, .0005, 0);
-        // let clone3 = outline.clone();
-        // clone1.position.set(.003, 0, 0);
-        // // clone3.position.set(0, 0, .0005);
-        // scene.add(clone1);
-        // scene.add(clone2);
-        // scene.add(clone3);
-
-
-
-
-
-
-
       }, );
     }
 
+
+
     function loadOutlineAsTubes()
     {
-      objLoader.load('obj/outline.obj',	function ( obj )
+      objLoader.load('obj/wowLine.obj',	function ( obj )
+      // objLoader.load('obj/outline.obj',	function ( obj )
       // objLoader.load('obj/cheeks.obj',	function ( obj )
       {
         console.log('outline: '+obj);
@@ -217,16 +177,20 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
                       // Create a tube along the current line segment (from start to end)
                       // scene.add(createTube(start, end, lineThickness)); // Adjust tube radius as needed
-                      objGroup.add( createTube(start, end, lineThickness));
+                      singleLineGroup.add( createTube(start, end, lineThickness));
 
                     }
+
+                    // randomAllLoop(singleLineGroup, 100);
+                    objGroup.add(singleLineGroup);
+                    setTimeout(() => randomAllWithOutline(wow, singleLineGroup, 100), 1000);
                   }
                   });
         });
     }
 
     let lineColor = 0x000000;
-    let lineThickness = 0.005;
+    let lineThickness = 0.01;
 
     // Function to create a tube between two points
       // function createTube(point1, point2, radius) {
@@ -274,58 +238,35 @@ var deskObj;
   }
 
 
-  var phone;
-  let row = new THREE.Group();
-  row.position.set(0, 1, 0);
-  scene.add(row);
-
-  let row2 = new THREE.Group();
-  row2.position.set(0, 2, 0);
-  scene.add(row2);
-
-  loadPhone();
-  function loadPhone()
+  let mainColorMat;
+  let sideColorMat;
+  let wow;
+  function loadWow()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
-    loader.load('obj/phone.glb',	function ( gltf )
+    loader.load('obj/wow.glb',	function ( gltf )
     {
       // deskObj
-      phone = gltf.scene;
-      // console.log(phone);
-      phone.scale.set(0.2, 0.2, 0.2);
-      objGroup.add( phone );
-      rowLoop(phone, 30);
-      // randomAllLoop(phone, 1000);
-      // loopCreate(phone, 40, [0, 0, 1], objGroup);
-      // phone.position.set(0, 1, 0);
+      wow = gltf.scene;
+      console.log(wow);
+      objGroup.add( wow );
 
-      // loopCreate(phone, 40, [0, 0, 1], row);
-
-      // loopCreate(phone, 40, [0, 0, 1], row2);
-
+      // Traverse to find materials by name
+      wow.traverse((child) => {
+        if (child.isMesh) {
+          if (child.material.name === 'mainColor') {
+            mainColorMat = child.material;
+          } else if (child.material.name === 'sideColor') {
+            sideColorMat = child.material;
+          }
+          console.log('Main Color Material:', mainColorMat);
+          console.log('Side Color Material:', sideColorMat);
+          mainColorMat.color.set(0xff0000);
+        }
+      });
+      // randomAllLoop(wow, 500);
 
     },    );
-  }
-
-
-//   const geometry = new THREE.SphereGeometry( 1, 16, 16 );
-// const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-// const sphere = new THREE.Mesh( geometry, material ); scene.add( sphere );
-// rowLoop(sphere, 30);
-
-  function rowLoop(object, rowCount)
-  {
-    for(let i = 0; i < rowCount; i++)
-    {
-      let row = new THREE.Group();
-      let center = i - (0.5*rowCount);
-      row.position.set(0, center, center);
-      // scene.add(row);
-      objGroup.add(row);
-      loopCreate(object, 100, [0, 0, 0.5], row);
-
-    }
-
   }
 
   function randomAllLoop(object, loopCount)
@@ -339,10 +280,10 @@ var deskObj;
       let randomZ = (Math.random()-0.5)*20;
       clone.position.set(randomX, randomY, randomZ);
 
-      let randomXR = toRad((Math.random()-0.5)*180);
-      let randomYR = toRad((Math.random()-0.5)*180);
-      let randomZR = toRad((Math.random()-0.5)*180);
-      clone.rotation.set(randomXR, randomYR, randomZR);
+      // let randomXR = toRad((Math.random()-0.5)*180);
+      // let randomYR = toRad((Math.random()-0.5)*180);
+      // let randomZR = toRad((Math.random()-0.5)*180);
+      // clone.rotation.set(randomXR, randomYR, randomZR);
 
       let randomScale = (Math.random()-0.5)*0.5;
       // clone.scale.set(randomScale, randomScale, randomScale);
@@ -350,93 +291,69 @@ var deskObj;
     }
   }
 
-var mouseObj;
-var mouseGroup = new THREE.Group();
-// scene.add(mouseGroup);
-
-  function loudMouse()
+  function randomAllWithOutline(object, outlineObj, loopCount)
   {
-    // loader.load('obj/deskcartoon.glb',	function ( gltf )
-    loader.load('obj/mouse.glb',	function ( gltf )
+    for(let i = 0; i < loopCount; i++)
     {
-      // obj1 = gltf.scene;
-      mouseObj = gltf.scene;
-      console.log(mouseObj);
-      // console.log(gltf);
-      // scene.add( model );
-      // objGroup.add( obj1 );
-      mouseGroup.add( mouseObj );
-      objGroup.add(mouseGroup);
-      mouseObjOutline = mouseObj.clone();
+      let clone = object.clone();
+      let lineClone = outlineObj.clone();
+      // let center = i - (0.5*loopCount);
+      let randomX = (Math.random()-0.5)*20;
+      let randomY = (Math.random()-0.5)*20;
+      let randomZ = (Math.random()-0.5)*20;
+      clone.position.set(randomX, randomY, randomZ);
+      lineClone.position.set(randomX, randomY, randomZ);
 
-      // outLineObj(mouseObjOutline);
-      // directionalLight.target = obj1;
-      //
-      // obj1.scale.set(0.3,0.3,0.3);
-      // mouseObj.position.set(-1.8,-0.2,1.5);
-      mouseObj.position.set(2,0,-2);
-      // obj1.rotation.set(0,1.5,0);
+      // let randomXR = toRad((Math.random()-0.5)*180);
+      // let randomYR = toRad((Math.random()-0.5)*180);
+      // let randomZR = toRad((Math.random()-0.5)*180);
+      // clone.rotation.set(randomXR, randomYR, randomZR);
 
-    },    );
+      let randomScale = (Math.random()-0.5)*0.5;
+      // clone.scale.set(randomScale, randomScale, randomScale);
+      objGroup.add(clone);
+      objGroup.add(lineClone);
+    }
   }
 
+  // Reference to the color picker element
+  const colorPicker = document.getElementById('colorPicker');
+
+  // Event listener for the color picker
+  colorPicker.addEventListener('input', (event) => {
+      // Get the selected color value from the picker
+      const color = event.target.value;
+      console.log(color);
+      // Update the material color (setHex converts hex color string to a format Three.js can use)
+      mainColorMat.emissive.set(color);
+      sideColorMat.emissive.set(addShade(color));
+  });
 
 
-
-  var face;
-    function loadFace()
-    {
-      // loader.load('obj/face.glb',	function ( gltf )
-      // loader.load('obj/faceSmall.glb',	function ( gltf )
-      // loader.load('obj/faceobj.glb',	function ( gltf )
-      loader.load('obj/faceobjanim.glb',	function ( gltf )
-      {
-        face = gltf.scene;
-        objGroup.add( face );
-        face.rotation.set(0, 2, 0)
-        console.log(face);
-        face = face.children[0];
-        // if (face.morphTargetDictionary && face.morphTargetInfluences) {
-        //     console.log('Blend Shape Names and Values:');
-        //
-        //     // Loop through each morph target in the dictionary
-        //     for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
-        //       face.morphTargetInfluences[index] = Math.random();
-        //         console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
-        //     }
-        // } else {
-        //     console.log('No blend shapes (morph targets) found on this object.');
-        // }
-        // face.position.set(0,0,-10);
-      },    );
-    }
-
-// setInterval(function()
-// {
-//   if (face.morphTargetDictionary && face.morphTargetInfluences) {
-//   // console.log('Blend Shape Names and Values:');
-//
-//   // Loop through each morph target in the dictionary
-//   for (const [key, index] of Object.entries(face.morphTargetDictionary)) {
-//     face.morphTargetInfluences[index] = Math.random();
-//       // console.log(`Blend Shape: ${key}, Influence: ${face.morphTargetInfluences[index]}`);
-//   }
-//   ambLight.intensity = Math.random()*2;
-// }
-// }, 200);
+  function addShade(color)
+  {
 
 
+    const sideColor = new THREE.Color(color);
 
-// const loader = new THREE.GLTFLoader();
-// loader.load('scene.gltf', function(gltf) {
-//     scene.add(gltf.scene);
-//
-//     // Select individual objects by name or path
-//     const objectToAnimate = gltf.scene.getObjectByName('ObjectNameInBlender');
-//
-//     // You can now animate objectToAnimate
-//     gsap.to(objectToAnimate.position, { x: 10, duration: 2 });
-// });
+    console.log(color);
+
+    // Set the main color for the emissive property of mainColorMat
+    // mainColorMat.emissive.set(sideColor);
+
+    // Convert to HSL
+    const hsl = {};
+    sideColor.getHSL(hsl);
+
+    // Darken the color by reducing the lightness (L)
+    hsl.l = Math.max(0, hsl.l - 0.2); // Reduce lightness by 0.2 for a darker shade
+
+    // Create a darker color for the side and apply it
+    const darkerColor = new THREE.Color().setHSL(hsl.h, hsl.s, hsl.l);
+    // sideColorMat.emissive.set(darkerColor);
+    return darkerColor;
+    // return sideColor.clone().multiplyScalar(0.7);
+  }
 
 
 
@@ -466,23 +383,18 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = (percentY -0.5)* toRad(-90);
-    let groupY = (percentX -0.5) * toRad(40);
-    // let groupX = (percentY -0.5)* toRad(-0.5);
-    // let groupY = (percentX -0.5) * toRad(0.5);
-    // let groupX = (percentY -0.5)* toRad(-10);
-    // let groupY = (percentX -0.5) * toRad(10);
+    let groupX = percentY * toRad(5);
+    let groupY = percentX * toRad(5);
     objGroup.rotation.set(0, groupY, groupX);
-    // objGroup.position.set(0, 0, percentX * 0.1);
 
-if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
+// if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
 
 
     objToX = (percentX-0.5)*10;
     objToY = (percentY-0.5)*-2;
 
-    mouseToX = (percentY-0.5)*0.2;
-    mouseToZ = (percentX-0.5)*-0.13;
+    mouseToX = (percentY-0.5)*0.17;
+    mouseToZ = (percentX-0.5)*-0.1;
 
   }
 
@@ -507,36 +419,9 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
   }
 
 
-  function loopCreate(loopObject, loopCount, spaceArray, group)
-  {
-    //todo, dont loop inside a template
-    // let addToDiv = activeDiv;
-    // let loopCount = 20;
-    for(let i = 0; i < loopCount; i++)
-    {
-      let centerMath = i-(0.5*loopCount);
-      // let centerMath = i/loopCount;
-      // let centerMath = i-(0.5*loopCount) * Math.sin()) +1;
-      // centerMath = Math.sin(toRad(centerMath * 360)) + 1;
-      let y = Math.sin(toRad(4*i/loopCount * 360))*2;
-      console.log('calc: '+centerMath);
-      // activeDiv = addToDiv; //should be the first one
-      // activeDivObj = null;
-      // addObj(loopObject);
-      let loopedObject = loopObject.clone();
-      // selectedObj.position[0] = i * 20;
-      // loopedObject.position.set(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
-      loopedObject.position.set(y, centerMath * spaceArray[1], centerMath * spaceArray[2]);
-      // selectedObj.setPosition(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
-      group.add(loopedObject);
-    }
-  }
-
-
   let activateAnimation = false;
   let delta, perSecond;
   let timeLastFrame = new Date().getTime();
-  let rot = 0;
   function animate()
   {
   	requestAnimationFrame( animate );
@@ -547,17 +432,13 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     let distX = objToX - objGroup.position.x;
     let distY = objToY - objGroup.position.y;
 
-    let distmouseX = mouseToX - mouseGroup.position.x;
-    let distmousez = mouseToZ - mouseGroup.position.z;
-
-
-    let mouseSpeed = delta /100;
-    mouseGroup.position.x = mouseGroup.position.x + (distmouseX * mouseSpeed);
-    mouseGroup.position.z = mouseGroup.position.z + (distmousez * mouseSpeed);
-
-    //auto rotate obj group
-    // rot += perSecond * toRad(180);
-    // objGroup.rotation.set(0, rot, 0);
+    // let distmouseX = mouseToX - mouseGroup.position.x;
+    // let distmousez = mouseToZ - mouseGroup.position.z;
+    //
+    //
+    // let mouseSpeed = delta /100;
+    // mouseGroup.position.x = mouseGroup.position.x + (distmouseX * mouseSpeed);
+    // mouseGroup.position.z = mouseGroup.position.z + (distmousez * mouseSpeed);
 
 
     // pTeal.lookAt(camera.position);
