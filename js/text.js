@@ -96,7 +96,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
   let singleLineGroup = new THREE.Group();
 
-  // loadOutlineAsTubes();
+  loadOutlineAsTubes();
 
 
 
@@ -153,7 +153,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
       // objLoader.load('obj/outline.obj',	function ( obj )
       // objLoader.load('obj/cheeks.obj',	function ( obj )
       {
-        console.log('outline: '+obj);
+        // console.log('outline: '+obj);
         // Traverse through the object's geometry
                 obj.traverse(function (child) {
                   if (child.isLine) {
@@ -183,7 +183,12 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
                     // randomAllLoop(singleLineGroup, 100);
                     objGroup.add(singleLineGroup);
-                    setTimeout(() => randomAllWithOutline(wow, singleLineGroup, 100), 1000);
+                    setTimeout(() => randomAllWithOutline(wow, singleLineGroup, 33), 1000);
+                    setTimeout(() => randomAllWithOutline(wow2, singleLineGroup, 33), 1000);
+                    setTimeout(() => randomAllWithOutline(wow3, singleLineGroup, 33), 1000);
+
+
+                    
                   }
                   });
         });
@@ -240,7 +245,12 @@ var deskObj;
 
   let mainColorMat;
   let sideColorMat;
-  let wow;
+  // Initialize material references
+// let wowMainColorMat, wowSideColorMat;
+let wow2MainColorMat, wow2SideColorMat;
+let wow3MainColorMat, wow3SideColorMat;
+
+  let wow, wow2, wow3;
   function loadWow()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
@@ -251,6 +261,9 @@ var deskObj;
       console.log(wow);
       objGroup.add( wow );
 
+      wow2 = wow.clone();
+      wow3 = wow.clone();
+
       // Traverse to find materials by name
       wow.traverse((child) => {
         if (child.isMesh) {
@@ -259,11 +272,42 @@ var deskObj;
           } else if (child.material.name === 'sideColor') {
             sideColorMat = child.material;
           }
-          console.log('Main Color Material:', mainColorMat);
-          console.log('Side Color Material:', sideColorMat);
+          // console.log('Main Color Material:', mainColorMat);
+          // console.log('Side Color Material:', sideColorMat);
           mainColorMat.color.set(0xff0000);
         }
       });
+
+      // Traverse and assign materials for wow2, keeping references
+       wow2.traverse((child) => {
+           if (child.isMesh) {
+               if (child.material.name === 'mainColor') {
+                   child.material = child.material.clone();
+                   wow2MainColorMat = child.material;
+                   wow2MainColorMat.color.set(0x0000ff); // Initial color for wow2 main
+               } else if (child.material.name === 'sideColor') {
+                   child.material = child.material.clone();
+                   wow2SideColorMat = child.material;
+                   wow2SideColorMat.color.set(0xffff00); // Initial color for wow2 side
+               }
+           }
+       });
+
+       // Traverse and assign materials for wow3, keeping references
+       wow3.traverse((child) => {
+           if (child.isMesh) {
+               if (child.material.name === 'mainColor') {
+                   child.material = child.material.clone();
+                   wow3MainColorMat = child.material;
+                   wow3MainColorMat.color.set(0xff00ff); // Initial color for wow3 main
+               } else if (child.material.name === 'sideColor') {
+                   child.material = child.material.clone();
+                   wow3SideColorMat = child.material;
+                   wow3SideColorMat.color.set(0x00ffff); // Initial color for wow3 side
+               }
+           }
+       });
+
       // randomAllLoop(wow, 500);
 
     },    );
@@ -316,6 +360,8 @@ var deskObj;
     }
   }
 
+
+
   // Reference to the color picker element
   const colorPicker = document.getElementById('colorPicker');
 
@@ -328,6 +374,28 @@ var deskObj;
       mainColorMat.emissive.set(color);
       sideColorMat.emissive.set(addShade(color));
   });
+  // Reference to the color picker element
+  const colorPicker2 = document.getElementById('colorPicker2');
+
+  // Event listener for the color picker
+  colorPicker2.addEventListener('input', (event) => {
+      const color = event.target.value;
+      wow2MainColorMat.emissive.set(color);
+      wow2SideColorMat.emissive.set(addShade(color));
+  });
+  // Reference to the color picker element
+  const colorPicker3 = document.getElementById('colorPicker3');
+
+  // Event listener for the color picker
+  colorPicker3.addEventListener('input', (event) => {
+      // Get the selected color value from the picker
+      const color = event.target.value;
+      console.log(color);
+      // Update the material color (setHex converts hex color string to a format Three.js can use)
+      wow3MainColorMat.emissive.set(color);
+      wow3SideColorMat.emissive.set(addShade(color));
+  });
+
 
 
   function addShade(color)
