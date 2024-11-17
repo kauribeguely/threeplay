@@ -10,7 +10,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   // const loader = new THREE.GLTFLoader();
   const loader = new GLTFLoader();
   const objLoader = new OBJLoader();
-  const orthographicAdapt = 100;
+  const orthographicAdapt = 300;
 
   // const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
   var camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
@@ -18,7 +18,8 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   // camera.position.z = 5;
   // Set the camera position
   // camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
-  camera.position.set(-7, 6.8, 5.5);
+  // camera.position.set(-7, 6.8, 5.5);
+  camera.position.set(10.8, -2.75, -5.6);
   //
   // // Set the camera rotation
   // camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
@@ -88,129 +89,6 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
   let deskObjOutline;
   let mouseObjOutline;
 
-  // loadScreenAndKeys();
-  // loadOutline();
-
-  // loadWow();
-  //
-  // let singleLineGroup = new THREE.Group();
-  //
-  // loadOutlineAsTubes();
-
-
-
-
-  // loudMouse();
-
-
-  // var outline;
-  //   function loadOutline()
-  //   {
-  //     // loader.load('obj/deskcartoon.glb',	function ( gltf )
-  //     loader.load('obj/outline.glb',	function ( gltf )
-  //     {
-  //       // deskObj
-  //       outline = gltf.scene;
-  //       console.log(outline);
-  //       // objGroup.add( obj1 );
-  //       scene.add(outline);
-  //
-  //
-  //     },    );
-  //   }
-  var outline;
-    function loadOutline()
-    {
-      // loader.load('obj/deskcartoon.glb',	function ( gltf )
-      objLoader.load('obj/outline.obj',	function ( obj )
-      // objLoader.load('obj/cheeks.obj',	function ( obj )
-      {
-        // deskObj
-        outline = obj;
-        console.log(outline);
-        // objGroup.add( obj1 );
-        scene.add(outline);
-
-
-
-        const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Change color as needed
-        outline.traverse((child) => {
-            // if (child.isMesh) {
-                // Optionally adjust the thickness here, for example, by scaling
-                // child.scale.set(1.2, 1.2, 1.2); // Scale to thicken lines
-                child.material = lineMaterial; // Apply the new material
-            // }
-        });
-      }, );
-    }
-
-
-
-    function loadOutlineAsTubes()
-    {
-      objLoader.load('obj/wowLine.obj',	function ( obj )
-      // objLoader.load('obj/outline.obj',	function ( obj )
-      // objLoader.load('obj/cheeks.obj',	function ( obj )
-      {
-        // console.log('outline: '+obj);
-        // Traverse through the object's geometry
-            obj.traverse(function (child)
-            {
-              if (child.isLine) {
-                console.log('Line detected:', child);
-
-                const geometry = child.geometry;
-                const vertices = geometry.attributes.position.array; // Get the vertices directly from the line
-
-                // Loop through the vertices in pairs to create tubes along the line segments
-                for (let i = 0; i < vertices.length; i += 6) {
-                  const start = new THREE.Vector3(
-                    vertices[i],
-                    vertices[i + 1],
-                    vertices[i + 2]
-                  );
-                  const end = new THREE.Vector3(
-                    vertices[i + 3],
-                    vertices[i + 4],
-                    vertices[i + 5]
-                  );
-
-                  // Create a tube along the current line segment (from start to end)
-                  // scene.add(createTube(start, end, lineThickness)); // Adjust tube radius as needed
-                  singleLineGroup.add( createTube(start, end, lineThickness));
-
-                }
-
-                // randomAllLoop(singleLineGroup, 100);
-                objGroup.add(singleLineGroup);
-
-                // setTimeout(() => randomAllWithOutline(wow, singleLineGroup, 33), 1000);
-                // setTimeout(() => randomAllWithOutline(wow2, singleLineGroup, 33), 1000);
-                // setTimeout(() => randomAllWithOutline(wow3, singleLineGroup, 33), 1000);
-
-                let loopCount = 20;
-                let zDist = 1.2;
-
-                setTimeout(() =>
-                {
-                  loopCreate(wow, loopCount, [0, 0, zDist], objGroup);
-                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], objGroup);
-
-                  loopCreate(wow2, loopCount, [0, 0, zDist], wow2LoopGroup);
-                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], wow2LoopGroup);
-
-                  loopCreate(wow2, loopCount, [0, 0, zDist], wow2LoopGroup2);
-                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], wow2LoopGroup2);
-
-                  loopCreate(wow3, loopCount, [0, 0, zDist], wow3LoopGroup);
-                  loopCreate(singleLineGroup, loopCount, [0, 0, zDist], wow3LoopGroup);
-                }, 500);
-
-              }
-            });
-        });
-    }
-
     let lineColor = 0x000000;
     let lineThickness = 0.01;
 
@@ -222,7 +100,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
         const length = direction.length(); // Distance between start and end
 
         // Create a cylinder with the correct length and radius
-        const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, length, 8, 1, false);
+        const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, length, 6, 1, false);
         const cylinderMaterial = new THREE.MeshBasicMaterial({ color: lineColor });
 
         const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
@@ -242,12 +120,17 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
 
       let deck, deckOutline;
+      let tape, tapeOutline;
 
       // let deck;
       loadGlb('obj/wavesDeck.glb', deck, objGroup);
+      loadOutlineObj('obj/deckLineFull.obj', deckOutline, objGroup);
       // let deck = loadGlb('obj/wavesDeck.glb', objGroup);
-      loadOutlineObj('obj/deckLine.obj', deckOutline, objGroup);
+      // loadOutlineObj('obj/deckLine.obj', deckOutline, objGroup);
+      loadGlb('obj/tape.glb', tape, objGroup);
+      loadOutlineObj('obj/tapeLine.obj', tapeOutline, objGroup);
       // let deckOutline = loadOutlineObj('obj/deckLine.obj', objGroup);
+
 
       async function loadObjectAndOutline(objSrc, outlineSrc, groupToAddTo) {
         try {
@@ -276,7 +159,7 @@ function loadGlb(src, variable, groupToAddTo)
   {
     // deskObj
     // deck = gltf.scene;
-    // console.log(deck);
+    console.log(deck);
     // if(groupToAddTo) groupToAddTo.add( deck );
     groupToAddTo.add( gltf.scene );
     variable = gltf.scene;
@@ -432,8 +315,8 @@ function loadOutlineObj(src, variable, groupToAddTo)
     percentY = mouseY/window.innerHeight;
 
 
-    let groupX = percentY * toRad(3);
-    let groupY = percentX * toRad(-3);
+    let groupX = percentY * toRad(6);
+    let groupY = percentX * toRad(-6);
     objGroup.rotation.set(0, groupY, groupX);
 
 
