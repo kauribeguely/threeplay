@@ -163,6 +163,17 @@ function loadGlb(src, variable, groupToAddTo)
     // if(groupToAddTo) groupToAddTo.add( deck );
     groupToAddTo.add( gltf.scene );
     variable = gltf.scene;
+
+    // Traverse all children of the loaded model
+    variable.traverse((child) => {
+        if (child.isMesh && child.material) {
+            // Check if the material has an emissive property
+            if (child.material.emissive) {
+                child.material.emissiveIntensity = 1.4; // Adjust as needed
+                console.log(`Updated emissive intensity for: ${child.material.name}`);
+            }
+        }
+    });
     // return gltf.scene;
   });
 }
