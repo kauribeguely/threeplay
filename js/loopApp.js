@@ -732,6 +732,13 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     mouseGroup.position.x = mouseGroup.position.x + (distmouseX * mouseSpeed);
     mouseGroup.position.z = mouseGroup.position.z + (distmousez * mouseSpeed);
 
+
+    objGroup.traverse((child) => {
+        if (child.isMesh) { // Check if the object is a Mesh
+            child.rotation.y += 0.03; // Adjust the rotation speed as needed
+        }
+    });
+
     //auto rotate obj group
     // rot += perSecond * toRad(180);
     // objGroup.rotation.set(0, rot, 0);
