@@ -70,7 +70,10 @@ import { TextureLoader } from 'three';
   //group for animation
   const objGroup = new THREE.Group();
   scene.add(objGroup);
-  // objGroup.position.y =-0.2;
+
+  const objGroup2 = new THREE.Group();
+  scene.add(objGroup2);
+  objGroup2.position.z = -3;
 
 
 
@@ -96,9 +99,12 @@ import { TextureLoader } from 'three';
 
   let outlineGroup = new THREE.Group();
 
-  loadScreenAndKeys();
-  loadOutlineAsTubes();
+
+  //INIT
+  // loadScreenAndKeys();
+  // loadOutlineAsTubes();
   // loudMouse();
+  loadStar();
 
 
   // loadOutline();
@@ -121,8 +127,32 @@ import { TextureLoader } from 'three';
   //   }
 
 
+let star;
+let starScale = 0.2;
+function loadStar()
+{
+  // loader.load('obj/deskcartoon.glb',	function ( gltf )
+  // loader.load('obj/star1.glb',	function ( gltf )
+  loader.load('obj/starThick.glb',	function ( gltf )
+  {
+    // deskObj
+    star = gltf.scene;
+    star.scale.set(starScale, starScale, starScale);
+
+    // objGroup.add( star );
+    // rowLoop(star, 10);
+    rowLoopGroup(star, 20, objGroup, [1, 0, 0]);
+
+    // star.position.set(-1, 0, -1);
+
+    // rowLoopGroup(star, 10, objGroup2, [1, 0, 0]);
+    // randomAllLoop(star, 1000);
+    // rowLoopGroup(star, 10, objGroup2);
+  });
+}
+
 let box;
-loadJeight();
+// loadJeight();
   function loadJeight()
   {
     // loader.load('obj/deskcartoon.glb',	function ( gltf )
@@ -366,6 +396,24 @@ var deskObj;
 // const sphere = new THREE.Mesh( geometry, material ); scene.add( sphere );
 // rowLoop(sphere, 30);
 
+
+  function rowLoopGroup(object, rowCount, group, distances)
+  {
+    for(let i = 0; i < rowCount; i++)
+    {
+      let row = new THREE.Group();
+      let center = i - (0.5*rowCount);
+      row.position.set(0.5*center, center, 0);
+      // scene.add(row);
+      group.add(row);
+      // loopCreate(object, 10, [1, 0, 1], row); //good for screen
+      loopCreate(object, 35, distances, row);
+      // loopCreate(object, 100, [0, 0, 0.5], row);
+
+    }
+
+  }
+
   function rowLoop(object, rowCount)
   {
     for(let i = 0; i < rowCount; i++)
@@ -375,7 +423,8 @@ var deskObj;
       row.position.set(0, center, center);
       // scene.add(row);
       objGroup.add(row);
-      loopCreate(object, 10, [0, 0, 1], row);
+      // loopCreate(object, 10, [1, 0, 1], row); //good for screen
+      loopCreate(object, 10, [1, 0, 1], row);
       // loopCreate(object, 100, [0, 0, 0.5], row);
 
     }
