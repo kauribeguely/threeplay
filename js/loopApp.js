@@ -104,6 +104,7 @@ import { TextureLoader } from 'three';
   // loadScreenAndKeys();
   // loadOutlineAsTubes();
   // loudMouse();
+  let starGroup = [];
   loadStar();
 
 
@@ -141,7 +142,7 @@ function loadStar()
 
     // objGroup.add( star );
     // rowLoop(star, 10);
-    rowLoopGroup(star, 20, objGroup, [1, 0, 0]);
+    rowLoopGroup(star, 40, 80, objGroup, [3, 0, 0]);
 
     // star.position.set(-1, 0, -1);
 
@@ -397,17 +398,19 @@ var deskObj;
 // rowLoop(sphere, 30);
 
 
-  function rowLoopGroup(object, rowCount, group, distances)
+  function rowLoopGroup(object, rowCount, columnCount, group, distances)
   {
     for(let i = 0; i < rowCount; i++)
     {
       let row = new THREE.Group();
       let center = i - (0.5*rowCount);
-      row.position.set(0.5*center, center, 0);
+      row.position.set(0.5 * center, 2 * center, 0);
+
+      // row.position.set(0.5*center, center, 0);
       // scene.add(row);
       group.add(row);
       // loopCreate(object, 10, [1, 0, 1], row); //good for screen
-      loopCreate(object, 35, distances, row);
+      loopCreate(object, columnCount, distances, row);
       // loopCreate(object, 100, [0, 0, 0.5], row);
 
     }
@@ -569,13 +572,45 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
+    camera.zoom = percentY * -1 - 0.1;
+    camera.updateProjectionMatrix();
+
+    let starNumber = 0;
+    starGroup.forEach((child) => {
+        // if (child.isMesh) { // Check if the object is a Mesh
+            // child.rotation.y = toRad(360) * percentX; // Adjust the rotation speed as needed
+            // child.rotation.y = toRad(360) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
+            child.rotation.y = toRad(180) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
+            child.rotation.z = toRad(90) * percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
+
+            let sinCalc = (Math.sin(toRad(starNumber % 360))+1)/10;
+
+            let newScale = (0.5 * percentX - 1) * sinCalc + starScale;
+            // let newScale = percentX * 0.1 + (starNumber % 30) * 0.01;
+            // let newScale = percentX * 0.05 * (starNumber % 10) + starScale;
+            // child.scale.set(newScale, newScale, newScale);
+            starNumber++;
+        // }
+    });
+    // objGroup.traverse((child) => {
+    //     if (child.isMesh) { // Check if the object is a Mesh
+    //         // child.rotation.y = toRad(360) * percentX; // Adjust the rotation speed as needed
+    //         child.rotation.y = toRad(360) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
+    //         starNumber+=3;
+    //     }
+    // });
+
+
     let groupX = (percentY -0.5)* toRad(-5);
     let groupY = (percentX -0.5) * toRad(5);
+    // objGroup.rotation.set(0, groupY, groupX);
+
+
+
     // let groupX = (percentY -0.5)* toRad(-0.5);
     // let groupY = (percentX -0.5) * toRad(0.5);
     // let groupX = (percentY -0.5)* toRad(-10);
     // let groupY = (percentX -0.5) * toRad(10);
-    objGroup.rotation.set(0, groupY, groupX);
     // objGroup.position.set(0, 0, percentX * 0.1);
 
 if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
@@ -610,6 +645,7 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
   }
 
 
+
   function loopCreate(loopObject, loopCount, spaceArray, group)
   {
     //todo, dont loop inside a template
@@ -635,6 +671,7 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       loopedObject.position.set(y, centerMath * spaceArray[1], centerMath * spaceArray[2]);
       // selectedObj.setPosition(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
       group.add(loopedObject);
+      starGroup.push(loopedObject);
     }
   }
 
@@ -733,11 +770,11 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     mouseGroup.position.z = mouseGroup.position.z + (distmousez * mouseSpeed);
 
 
-    objGroup.traverse((child) => {
-        if (child.isMesh) { // Check if the object is a Mesh
-            child.rotation.y += 0.03; // Adjust the rotation speed as needed
-        }
-    });
+    // objGroup.traverse((child) => {
+    //     if (child.isMesh) { // Check if the object is a Mesh
+    //         child.rotation.y += 0.03; // Adjust the rotation speed as needed
+    //     }
+    // });
 
     //auto rotate obj group
     // rot += perSecond * toRad(180);
