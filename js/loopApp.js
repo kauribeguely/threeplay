@@ -572,8 +572,9 @@ var mouseGroup = new THREE.Group();
     percentY = mouseY/window.innerHeight;
 
 
-    camera.zoom = percentY * -1 - 0.1;
-    camera.updateProjectionMatrix();
+    // zoom on mousemove
+    // camera.zoom = percentY * -1 - 0.1;
+    // camera.updateProjectionMatrix();
 
     let starNumber = 0;
     starGroup.forEach((child) => {
@@ -651,6 +652,7 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     //todo, dont loop inside a template
     // let addToDiv = activeDiv;
     // let loopCount = 20;
+    let randomMax = 1;
     for(let i = 0; i < loopCount; i++)
     {
       let centerMath = i-(0.5*loopCount);
@@ -660,7 +662,8 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       // let y = Math.sin(toRad(4*i/loopCount * 360))*2;
       let y = centerMath * spaceArray[0];
 
-
+      let xRandomness = (Math.random() - 0.5) * randomMax;
+      let yRandomness = (Math.random() - 0.5) * randomMax;
       // console.log('calc: '+centerMath);
       // activeDiv = addToDiv; //should be the first one
       // activeDivObj = null;
@@ -668,7 +671,12 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       let loopedObject = loopObject.clone();
       // selectedObj.position[0] = i * 20;
       // loopedObject.position.set(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
+
+      //Screens
       loopedObject.position.set(y, centerMath * spaceArray[1], centerMath * spaceArray[2]);
+
+      // Randomed
+      // loopedObject.position.set(y + xRandomness, centerMath * spaceArray[1] + yRandomness, centerMath * spaceArray[2]);
       // selectedObj.setPosition(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
       group.add(loopedObject);
       starGroup.push(loopedObject);
