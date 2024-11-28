@@ -53,7 +53,7 @@ import { TextureLoader } from 'three';
   // const directionalLight = new THREE.DirectionalLight( 0xffffff, 20 );
   const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.position.set(4, 0 ,0 );
-  // lightGroup.add( directionalLight );
+  lightGroup.add( directionalLight );
   // lightGroup.position.set(0, 0 , 10 );
 
   // const pointLight = new THREE.PointLight( 0x9a458c , 3, 100 ); //darker purple
@@ -63,7 +63,7 @@ import { TextureLoader } from 'three';
   // lightGroup.add( pointLight );
 
   // const ambLight = new THREE.AmbientLight( 0x9a458c, 0.5);
-  const ambLight = new THREE.AmbientLight( 0xffffff, 1);
+  const ambLight = new THREE.AmbientLight( 0xffffff, 0.5);
   lightGroup.add( ambLight );
 
 
@@ -99,12 +99,12 @@ import { TextureLoader } from 'three';
 
   let outlineGroup = new THREE.Group();
 
+  let starGroup = [];
 
   //INIT
   // loadScreenAndKeys();
   // loadOutlineAsTubes();
   // loudMouse();
-  let starGroup = [];
   loadStar();
 
 
@@ -134,7 +134,8 @@ function loadStar()
 {
   // loader.load('obj/deskcartoon.glb',	function ( gltf )
   // loader.load('obj/star1.glb',	function ( gltf )
-  loader.load('obj/starThick.glb',	function ( gltf )
+  // loader.load('obj/starThick.glb',	function ( gltf )
+  loader.load('obj/heart.glb',	function ( gltf )
   {
     // deskObj
     star = gltf.scene;
@@ -142,7 +143,7 @@ function loadStar()
 
     // objGroup.add( star );
     // rowLoop(star, 10);
-    rowLoopGroup(star, 40, 80, objGroup, [3, 0, 0]);
+    rowLoopGroup(star, 40, 80, objGroup, [2, 0, 0]);
 
     // star.position.set(-1, 0, -1);
 
@@ -404,7 +405,8 @@ var deskObj;
     {
       let row = new THREE.Group();
       let center = i - (0.5*rowCount);
-      row.position.set(0.5 * center, 2 * center, 0);
+      // row.position.set(0.5 * center, 2 * center, 0);
+      row.position.set(center, center, 0);
 
       // row.position.set(0.5*center, center, 0);
       // scene.add(row);
@@ -582,7 +584,8 @@ var mouseGroup = new THREE.Group();
             // child.rotation.y = toRad(360) * percentX; // Adjust the rotation speed as needed
             // child.rotation.y = toRad(360) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
             child.rotation.y = toRad(180) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
-            child.rotation.z = toRad(90) * percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
+            child.rotation.x = toRad(90) * -percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
+            // child.rotation.x = toRad(90) * percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
 
             let sinCalc = (Math.sin(toRad(starNumber % 360))+1)/10;
 
