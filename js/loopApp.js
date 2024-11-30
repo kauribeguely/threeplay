@@ -24,7 +24,7 @@ import { TextureLoader } from 'three';
   camera.position.set(9.2, 3.5357076573574338, -5.445004156246992);
 
   // Set the camera rotation
-  camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
+  // camera.rotation.set(-2.6737411922676193, 0.7789086841463806, 2.8005140536335853);
 
   // camera.position.y = 1;
 
@@ -97,9 +97,17 @@ import { TextureLoader } from 'three';
   let deskObjOutline;
   let mouseObjOutline;
 
+  let phone, tablet, laptop;
+
   let outlineGroup = new THREE.Group();
 
   let starGroup = [];
+
+  // same or different
+  let interactionStyle = "same";
+  let isMultiObject = false;
+  let spacing = 1.1;
+
 
   //INIT
   // loadScreenAndKeys();
@@ -109,10 +117,14 @@ import { TextureLoader } from 'three';
 
   //TODO:
   // loopDat('obj/phoneIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
-  loopDat('obj/laptopIso.glb', 0.2, 40, 80, objGroup, [2, 0, 0]);
-  // loopDat('obj/tabletIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
+  // loopDat('obj/laptopIso.glb', 0.2, 40, 80, objGroup, [2, 0, 0]);
+  loopDat('obj/tabletIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
   // loadOutline();
   // loadFace();
+
+  let deviceUrls = ['obj/phoneIso.glb', 'obj/laptopIso.glb', 'obj/tabletIso.glb'];
+
+  // loadAllDevices();
 
   // var outline;
   //   function loadOutline()
@@ -129,6 +141,56 @@ import { TextureLoader } from 'three';
   //
   //     },    );
   //   }
+
+
+let numLoaded = 0;
+let newScale = 0.2;
+// TODO: make dynamic, list of names, counts the number, loop the load, count the arrayLength, mousemove
+function loadAllDevices()
+{
+  // deviceUrls.forEach(function(url)
+  // {
+  //
+  // });
+  loader.load("obj/phoneIso.glb",	function ( gltf )
+  {
+    // deskObj
+    phone = gltf.scene;
+    // phone.scale.set()
+    phone.scale.set( newScale,  newScale,  newScale);
+    numLoaded++;
+    checkInitDeviceLoop();
+  });
+  loader.load("obj/tabletIso.glb",	function ( gltf )
+  {
+    // deskObj
+    tablet = gltf.scene;
+    tablet.scale.set(  newScale,   newScale,   newScale);
+    numLoaded++;
+    checkInitDeviceLoop();
+  });
+  loader.load("obj/laptopIso.glb",	function ( gltf )
+  {
+    // deskObj
+    laptop = gltf.scene;
+    laptop.scale.set( newScale,  newScale,  newScale);
+
+    numLoaded++;
+    checkInitDeviceLoop();
+  });
+}
+
+function checkInitDeviceLoop()
+{
+  if(numLoaded == 3)
+  {
+    //first parameter ignored in multi device
+    // rowLoopGroup(laptop, rowCount, columnCount, group, distances);
+
+    rowLoopGroup(laptop, 40, 80, objGroup, [spacing, 0, 0]);
+  }
+}
+
 
 let loopable;
 let loopScale = 0.2;
@@ -376,7 +438,7 @@ var deskObj;
   }
 
 
-  var phone;
+  // var phone;
   let row = new THREE.Group();
   row.position.set(0, 1, 0);
   scene.add(row);
@@ -423,7 +485,14 @@ var deskObj;
       let row = new THREE.Group();
       let center = i - (0.5*rowCount);
       // row.position.set(0.5 * center, 2 * center, 0);
-      row.position.set(center, center, 0);
+      // row.position.set(0, center, 0);
+      let xSpace = 0.8*spacing;
+      if(i % 2 == 1)
+      {
+        xSpace = 0;
+      }
+      row.position.set(xSpace, 1*i*spacing, 0);
+      // row.position.set(xSpace, 0.5*i*spacing, 0);
 
       // row.position.set(0.5*center, center, 0);
       // scene.add(row);
@@ -602,18 +671,27 @@ var mouseGroup = new THREE.Group();
     starGroup.forEach((child) => {
         // if (child.isMesh) { // Check if the object is a Mesh
 
-      
-        // ALL SAME ROTATION
-        // testX = toRad(90) * (percentX-0.5) + toRad(115);
-        // testY = toRad(45) * (percentY-0.5);
-        //     child.rotation.y = testX;
-        //     child.rotation.x = testY;
+        switch (interactionStyle) {
+          case "same":
+          // ALL SAME ROTATION
+            testX = toRad(90) * (percentX-0.5) + toRad(115);
+            testY = toRad(45) * (percentY-0.5);
+              child.rotation.y = testX;
+              child.rotation.x = testY;
+            break;
+          case "different":
+          //different rotation each
+          child.rotation.y = toRad(180) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
+          child.rotation.x = toRad(90) * -percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
+            break;
+          default:
+
+        }
+
         //
             // child.rotation.y = toRad(360) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
 
-            //different rotation each
-            child.rotation.y = toRad(180) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
-            child.rotation.x = toRad(90) * -percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
+
 
 
 
@@ -686,7 +764,6 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     return rad/0.0175;
   }
 
-
   function loopCreate(loopObject, loopCount, spaceArray, group)
   {
     //todo, dont loop inside a template
@@ -702,6 +779,7 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       // let y = Math.sin(toRad(4*i/loopCount * 360))*2;
       let y = centerMath * spaceArray[0];
 
+      //to go slightly off grid
       let xRandomness = (Math.random() - 0.5) * randomMax;
       let yRandomness = (Math.random() - 0.5) * randomMax;
       // console.log('calc: '+centerMath);
@@ -709,6 +787,24 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
       // activeDivObj = null;
       // addObj(loopObject);
       let loopedObject = loopObject.clone();
+
+      // console.log('here');
+      if(isMultiObject)
+      {
+        // console.log(i % 3);
+        if (i % 3 === 0)
+        {
+          loopedObject = laptop.clone();
+        }
+        else if (i % 3 === 1)
+        {
+          loopedObject = tablet.clone();
+        }
+        else if (i % 3 === 2)
+        {
+          loopedObject = phone.clone();
+        }
+      }
       // selectedObj.position[0] = i * 20;
       // loopedObject.position.set(centerMath * spaceArray[0], centerMath * spaceArray[1], centerMath * spaceArray[2]);
 
