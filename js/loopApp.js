@@ -105,9 +105,12 @@ import { TextureLoader } from 'three';
   // loadScreenAndKeys();
   // loadOutlineAsTubes();
   // loudMouse();
-  loadStar();
+  // loadStar();
 
-
+  //TODO:
+  // loopDat('obj/phoneIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
+  loopDat('obj/laptopIso.glb', 0.2, 40, 80, objGroup, [2, 0, 0]);
+  // loopDat('obj/tabletIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
   // loadOutline();
   // loadFace();
 
@@ -127,6 +130,20 @@ import { TextureLoader } from 'three';
   //     },    );
   //   }
 
+let loopable;
+let loopScale = 0.2;
+function loopDat(objectUrl, objScale, rowCount, columnCount, group, distances)
+{
+  // loader.load('obj/laptopIso.glb',	function ( gltf )
+  // loader.load('obj/tabletIso.glb',	function ( gltf )
+  loader.load(objectUrl,	function ( gltf )
+  {
+    // deskObj
+    loopable = gltf.scene;
+    loopable.scale.set(objScale, objScale, objScale);
+    rowLoopGroup(loopable, rowCount, columnCount, group, distances);
+  });
+}
 
 let star;
 let starScale = 0.2;
@@ -564,6 +581,9 @@ var mouseGroup = new THREE.Group();
   var objToY = 0;
   var mouseToX = 0;
   var mouseToZ = 0;
+
+  let testY;
+  let testX;
   // objRotX;
   document.onmousemove = function(evt)
   {
@@ -581,10 +601,22 @@ var mouseGroup = new THREE.Group();
     let starNumber = 0;
     starGroup.forEach((child) => {
         // if (child.isMesh) { // Check if the object is a Mesh
-            // child.rotation.y = toRad(360) * percentX; // Adjust the rotation speed as needed
+
+      
+        // ALL SAME ROTATION
+        // testX = toRad(90) * (percentX-0.5) + toRad(115);
+        // testY = toRad(45) * (percentY-0.5);
+        //     child.rotation.y = testX;
+        //     child.rotation.x = testY;
+        //
             // child.rotation.y = toRad(360) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
+
+            //different rotation each
             child.rotation.y = toRad(180) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
             child.rotation.x = toRad(90) * -percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
+
+
+
             // child.rotation.x = toRad(90) * percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
 
             let sinCalc = (Math.sin(toRad(starNumber % 360))+1)/10;
@@ -635,7 +667,8 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     switch(evt.key)
     {
       case " ":
-        console.log(camera.position);
+        // console.log(camera.position);
+        console.log(toDeg(testX), toDeg(testY))
         break;
 
 
@@ -648,6 +681,10 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     return 0.0175*deg;
   }
 
+  function toDeg(rad)
+  {
+    return rad/0.0175;
+  }
 
 
   function loopCreate(loopObject, loopCount, spaceArray, group)
