@@ -15,8 +15,8 @@ import { TextureLoader } from 'three';
 
   const orthographicAdapt = 1000;
 
-  // const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
-  const camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
+  const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
+  // const camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
   // const camera = new THREE.OrthographicCamera( window.innerWidth, window.innerWidth, window.innerHeight, window.innerHeight, 1, 1000 );
   // scene.add(camera );
   // camera.position.z = 5;
@@ -118,12 +118,46 @@ import { TextureLoader } from 'three';
   //TODO:
   // loopDat('obj/phoneIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
   // loopDat('obj/laptopIso.glb', 0.2, 40, 80, objGroup, [2, 0, 0]);
-  loopDat('obj/tabletIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
+  // loopDat('obj/tabletIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
   // loadOutline();
   // loadFace();
 
   let deviceUrls = ['obj/phoneIso.glb', 'obj/laptopIso.glb', 'obj/tabletIso.glb'];
 
+  let particle;
+  let particleScale = 0.2;
+  let particleList = [];
+  let particleRange = 3;
+  // initParticle('obj/heart.glb');
+  initParticle('obj/star1.glb');
+
+  function initParticle(url)
+  {
+    loader.load(url,	function ( gltf )
+    {
+      // deskObj
+      particle = gltf.scene;
+      particle.scale.set(particleScale, particleScale, particleScale);
+      for(let i = 0; i < 10; i++)
+      {
+        let newParticle = particle.clone();
+        particle.position.set(
+          Math.random() * particleRange - (0.5 * particleRange), // Random x position
+          Math.random() * maxY, // Random y position
+          Math.random() * particleRange - (0.5 * particleRange) // Random z position
+        );
+        particle.position.z = Math.random()*toRad(360);
+        // setTimeout(function(){
+          objGroup.add(newParticle);
+          // scene.add(newParticle);
+          particleList.push(newParticle);
+        // }, i*100);
+
+      }
+
+
+    });
+  }
   // loadAllDevices();
 
   // var outline;
@@ -717,7 +751,9 @@ var mouseGroup = new THREE.Group();
 
     let groupX = (percentY -0.5)* toRad(-5);
     let groupY = (percentX -0.5) * toRad(5);
+
     // objGroup.rotation.set(0, groupY, groupX);
+    objGroup.rotation.set(0, groupY, 0);
 
 
 
@@ -895,6 +931,9 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
   let delta, perSecond;
   let timeLastFrame = new Date().getTime();
   let rot = 0;
+
+  let maxY = 20;
+  let particleSpeed = 0.01;
   function animate()
   {
   	requestAnimationFrame( animate );
@@ -914,6 +953,18 @@ if(mouseObj)    mouseObj.rotation.y = 1.5 + (percentX - 0.5) * 0.1;
     mouseGroup.position.z = mouseGroup.position.z + (distmousez * mouseSpeed);
 
 
+    particleList.forEach(function(particle)
+    {
+      particle.position.y += delta*particleSpeed; // Move the particle downward
+      particle.rotation.z += delta*toRad(0.08); // Move the particle downward
+      // particle.position.y += delta*particleSpeed; // Move the particle downward
+      if (particle.position.y > maxY) {
+        // Reset particle to the starting height
+        particle.position.y = 0;
+        // particle.position.x = Math.random() * 20 - 10; // Optionally randomize x
+        // particle.position.z = Math.random() * 20 - 10; // Optionally randomize z
+      }
+    });
     // objGroup.traverse((child) => {
     //     if (child.isMesh) { // Check if the object is a Mesh
     //         child.rotation.y += 0.03; // Adjust the rotation speed as needed
