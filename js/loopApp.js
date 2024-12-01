@@ -15,8 +15,8 @@ import { TextureLoader } from 'three';
 
   const orthographicAdapt = 1000;
 
-  const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
-  // const camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
+  // const camera = new THREE.PerspectiveCamera( 30, canvasWidth*window.innerWidth / window.innerHeight, 0.1, 1000 );
+  const camera = new THREE.OrthographicCamera( window.innerWidth / - orthographicAdapt, window.innerWidth / orthographicAdapt, window.innerHeight / orthographicAdapt, window.innerHeight / - orthographicAdapt, 1, 1000 );
   // const camera = new THREE.OrthographicCamera( window.innerWidth, window.innerWidth, window.innerHeight, window.innerHeight, 1, 1000 );
   // scene.add(camera );
   // camera.position.z = 5;
@@ -119,6 +119,16 @@ import { TextureLoader } from 'three';
   // loopDat('obj/phoneIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
   // loopDat('obj/laptopIso.glb', 0.2, 40, 80, objGroup, [2, 0, 0]);
   // loopDat('obj/tabletIso.glb', 0.3, 40, 80, objGroup, [2, 0, 0]);
+
+  const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+  const material = new THREE.MeshStandardMaterial( {color: 0x0d299d} );
+  const cube = new THREE.Mesh( geometry, material );
+  // loopable = gltf.scene;
+  cube.scale.set(1, 1, 1);
+  rowLoopGroup(cube, 40, 80, objGroup, [spacing, 0, 0]);
+
+
+  // scene.add( cube );
   // loadOutline();
   // loadFace();
 
@@ -129,7 +139,7 @@ import { TextureLoader } from 'three';
   let particleList = [];
   let particleRange = 3;
   // initParticle('obj/heart.glb');
-  initParticle('obj/star1.glb');
+  // initParticle('obj/star1.glb');
 
   function initParticle(url)
   {
@@ -158,6 +168,7 @@ import { TextureLoader } from 'three';
 
     });
   }
+
   // loadAllDevices();
 
   // var outline;
@@ -520,7 +531,8 @@ var deskObj;
       let center = i - (0.5*rowCount);
       // row.position.set(0.5 * center, 2 * center, 0);
       // row.position.set(0, center, 0);
-      let xSpace = 0.8*spacing;
+      let xSpace = 0.5*spacing;
+      // let xSpace = 0.8*spacing;
       if(i % 2 == 1)
       {
         xSpace = 0;
@@ -707,16 +719,16 @@ var mouseGroup = new THREE.Group();
 
         switch (interactionStyle) {
           case "same":
-          // ALL SAME ROTATION
-            testX = toRad(90) * (percentX-0.5) + toRad(115);
-            testY = toRad(45) * (percentY-0.5);
+              // ALL SAME ROTATION
+              testX = toRad(90) * (percentX-0.5) + toRad(115);
+              testY = toRad(45) * (percentY-0.5);
               child.rotation.y = testX;
-              child.rotation.x = testY;
+              // child.rotation.x = testY;
             break;
           case "different":
-          //different rotation each
-          child.rotation.y = toRad(180) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
-          child.rotation.x = toRad(90) * -percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
+            //different rotation each
+            child.rotation.y = toRad(180) * percentX + starNumber * toRad(15); // Adjust the rotation speed as needed
+            child.rotation.x = toRad(90) * -percentY + starNumber * toRad(15); // Adjust the rotation speed as needed
             break;
           default:
 
@@ -749,11 +761,11 @@ var mouseGroup = new THREE.Group();
     // });
 
 
-    let groupX = (percentY -0.5)* toRad(-5);
-    let groupY = (percentX -0.5) * toRad(5);
+    let groupX = (percentY -0.5)* toRad(-30);
+    let groupY = (percentX -0.5) * toRad(30);
 
     // objGroup.rotation.set(0, groupY, groupX);
-    objGroup.rotation.set(0, groupY, 0);
+    objGroup.rotation.set(groupX, groupY, 0);
 
 
 
