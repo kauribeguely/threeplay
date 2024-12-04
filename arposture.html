@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Head Pose Tracking</title>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; perspective: 100px; }
+    video { transform: scaleX(-1); width: 640px; height: 480px; }
+    .info { margin-top: 10px; font-size: 20px; }
+    #rotateMe { width:100px; height: 100px; background: blue; }
+  </style>
+</head>
+<body>
+  <h1>Head Pose Tracking</h1>
+  <video id="video" autoplay muted playsinline></video>
+  <div id="rotateMe"></div>
+
+
+  <div class="info">
+    <p><strong>Position:</strong> X: <span id="posX">0</span>, Y: <span id="posY">0</span>, Z: <span id="posZ">0</span></p>
+    <p><strong>Rotation:</strong> RX: <span id="rotX">0</span>, RY: <span id="rotY">0</span>, RZ: <span id="rotZ">0</span></p>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const posX = document.getElementById('posX');
+    const posY = document.getElementById('posY');
+    const posZ = document.getElementById('posZ');
+    const rotX = document.getElementById('rotX');
+    const rotY = document.getElementById('rotY');
+    const rotZ = document.getElementById('rotZ');
+    let rotMe = document.getElementById('rotateMe');
+
+    // Initialize MediaPipe Face Mesh
+    const faceMesh = new FaceMesh({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
+    faceMesh.setOptions({
+      maxNumFaces: 1,
+      refineLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+    });
+
+    faceMesh.onResults((results) => {
+      if (results.multiFaceLandmarks && results.multiFaceLandmarks[0]) {
+        const landmarks = results.multiFaceLandmarks[0];
+
+        // Calculate approximate head position using the nose tip
+        const noseTip = landmarks[1]; // Landmark index 1 is usually the nose tip
+        posX.textContent = noseTip.x.toFixed(3);
+        posY.textContent = noseTip.y.toFixed(3);
+        posZ.textContent = noseTip.z.toFixed(3);
+
+        // Calculate head rotation (simplified using basic landmarks)
+        const leftEye = landmarks[33]; // Left eye corner
+        const rightEye = landmarks[263]; // Right eye corner
+
+        const deltaX = rightEye.x - leftEye.x;
+        const deltaY = rightEye.y - leftEye.y;
+        const deltaZ = rightEye.z - leftEye.z;
+
+        // Estimate rotation angles (rudimentary and not perfect)
+        const yaw = Math.atan2(deltaY, deltaX); // Left/right rotation
+        const pitch = Math.atan2(deltaZ, deltaX); // Up/down rotation
+        const roll = Math.atan2(deltaZ, deltaY); // Tilt rotation
+
+        rotX.textContent = pitch.toFixed(3);
+        rotY.textContent = yaw.toFixed(3);
+        rotZ.textContent = roll.toFixed(3);
+
+        let rotX2 = 57.3 * pitch.toFixed(3);
+        let rotY2 = 57.3 * yaw.toFixed(3);
+        let rotZ2 = 57.3 * roll.toFixed(3);
+
+        rotMe.style.transform = "rotateX("+rotX2+"deg) rotateY("+rotY2+"deg) rotateZ("+rotZ2+"deg)";
+      }
+    });
+
+    // Access webcam
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      video.srcObject = stream;
+      const camera = new Camera(video, {
+        onFrame: async () => {
+          await faceMesh.send({image: video});
+        },
+      });
+      camera.start();
+    });
+  </script>
+</body>
+</html>

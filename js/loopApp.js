@@ -125,7 +125,7 @@ import { TextureLoader } from 'three';
   const cube = new THREE.Mesh( geometry, material );
   // loopable = gltf.scene;
   cube.scale.set(1, 1, 1);
-  rowLoopGroup(cube, 40, 80, objGroup, [spacing, 0, 0]);
+  // rowLoopGroup(cube, 40, 80, objGroup, [spacing, 0, 0]);
 
 
   // scene.add( cube );
