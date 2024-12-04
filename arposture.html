@@ -10,34 +10,34 @@
     body { font-family: Arial, sans-serif; text-align: center; perspective: 100px; }
     video { transform: scaleX(-1); width: 640px; height: 480px; }
     .info { margin-top: 10px; font-size: 20px; }
-    #rotateMe { width:100px; height: 100px; background: blue; }
+    /* #rotateMe { width:100px; height: 100px; background: blue; } */
   </style>
 </head>
 <body>
-  <h1>Head Pose Tracking</h1>
+
   <video id="video" autoplay muted playsinline></video>
-  <div id="rotateMe"></div>
-
-
-
-
+  <!-- <div id="rotateMe"></div> -->
   <div class="info">
-    <p><strong>Position:</strong> X: <span id="posX">0</span>, Y: <span id="posY">0</span>, Z: <span id="posZ">0</span></p>
-    <p><strong>Rotation:</strong> RX: <span id="rotX">0</span>, RY: <span id="rotY">0</span>, RZ: <span id="rotZ">0</span></p>
+    <span id="posY">0</span>
+    <!-- <p><strong>Position:</strong> X: <span id="posX">0</span>, Y: <span id="posY">0</span>, Z: <span id="posZ">0</span></p>
+    <p><strong>Rotation:</strong> RX: <span id="rotX">0</span>, RY: <span id="rotY">0</span>, RZ: <span id="rotZ">0</span></p> -->
   </div>
-  <button onmousedown="setPostureHeight()" id='setPosturePos'>Set Posture</button>
+  <h1 id='mainHeading'>Posture Monitor</h1>
+  <p>Sit up straight then click below</p>
+  <button onmousedown="setPostureHeight()" id='setPosturePos'>Set Goal Posture</button>
 
   <script>
     const video = document.getElementById('video');
-    const posX = document.getElementById('posX');
+    // const posX = document.getElementById('posX');
     const posYEl = document.getElementById('posY');
-    const posZ = document.getElementById('posZ');
-    const rotX = document.getElementById('rotX');
-    const rotY = document.getElementById('rotY');
-    const rotZ = document.getElementById('rotZ');
-    let rotMe = document.getElementById('rotateMe');
+    // const posZ = document.getElementById('posZ');
+    // const rotX = document.getElementById('rotX');
+    // const rotY = document.getElementById('rotY');
+    // const rotZ = document.getElementById('rotZ');
+    // let rotMe = document.getElementById('rotateMe');
     let setPosturePos = document.getElementById('setPosturePos');
-    const sound = new Audio('pong.mp3'); // Preload soun
+    const sound = new Audio('Ring09.m4a'); // Preload soun
+    // const sound = new Audio('pong.mp3'); // Preload soun
 
     let posY;
     // Initialize MediaPipe Face Mesh
@@ -54,36 +54,38 @@
         const landmarks = results.multiFaceLandmarks[0];
 
         // Calculate approximate head position using the nose tip
+        // const leftEar = landmarks[234]; // Landmark index 234 is left ear
         const noseTip = landmarks[1]; // Landmark index 1 is usually the nose tip
 
         posY = noseTip.y.toFixed(3);
+        // posY = leftEar.y.toFixed(3);
 
-        posX.textContent = noseTip.x.toFixed(3);
-        posYEl.textContent = posY;
-        posZ.textContent = noseTip.z.toFixed(3);
+        // posX.textContent = noseTip.x.toFixed(3);
+        posYEl.textContent = posY + " -> Goal: " + postureHeight;
+        // posZ.textContent = noseTip.z.toFixed(3);
 
         // Calculate head rotation (simplified using basic landmarks)
-        const leftEye = landmarks[33]; // Left eye corner
-        const rightEye = landmarks[263]; // Right eye corner
+        // const leftEye = landmarks[33]; // Left eye corner
+        // const rightEye = landmarks[263]; // Right eye corner
+        //
+        // const deltaX = rightEye.x - leftEye.x;
+        // const deltaY = rightEye.y - leftEye.y;
+        // const deltaZ = rightEye.z - leftEye.z;
+        //
+        // // Estimate rotation angles (rudimentary and not perfect)
+        // const yaw = Math.atan2(deltaY, deltaX); // Left/right rotation
+        // const pitch = Math.atan2(deltaZ, deltaX); // Up/down rotation
+        // const roll = Math.atan2(deltaZ, deltaY); // Tilt rotation
+        //
+        // rotX.textContent = pitch.toFixed(3);
+        // rotY.textContent = yaw.toFixed(3) + " Set: " + postureHeight;
+        // rotZ.textContent = roll.toFixed(3);
+        //
+        // let rotX2 = 57.3 * pitch.toFixed(3);
+        // let rotY2 = 57.3 * yaw.toFixed(3);
+        // let rotZ2 = 57.3 * roll.toFixed(3);
 
-        const deltaX = rightEye.x - leftEye.x;
-        const deltaY = rightEye.y - leftEye.y;
-        const deltaZ = rightEye.z - leftEye.z;
-
-        // Estimate rotation angles (rudimentary and not perfect)
-        const yaw = Math.atan2(deltaY, deltaX); // Left/right rotation
-        const pitch = Math.atan2(deltaZ, deltaX); // Up/down rotation
-        const roll = Math.atan2(deltaZ, deltaY); // Tilt rotation
-
-        rotX.textContent = pitch.toFixed(3);
-        rotY.textContent = yaw.toFixed(3) + " Set: " + postureHeight;
-        rotZ.textContent = roll.toFixed(3);
-
-        let rotX2 = 57.3 * pitch.toFixed(3);
-        let rotY2 = 57.3 * yaw.toFixed(3);
-        let rotZ2 = 57.3 * roll.toFixed(3);
-
-        rotMe.style.transform = "rotateX("+rotX2+"deg) rotateY("+rotY2+"deg) rotateZ("+rotZ2+"deg)";
+        // rotMe.style.transform = "rotateX("+rotX2+"deg) rotateY("+rotY2+"deg) rotateZ("+rotZ2+"deg)";
 
         checkPosture();
       }
@@ -91,7 +93,7 @@
 
     // Access webcam
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      video.srcObject = stream;
+      // video.srcObject = stream;
       const camera = new Camera(video, {
         onFrame: async () => {
           await faceMesh.send({image: video});
@@ -102,6 +104,7 @@
 
 
     let postureHeight = 0;
+    let isGoodPosture = true;
     function setPostureHeight()
     {
       postureHeight = posY;
@@ -109,11 +112,28 @@
 
     function checkPosture()
     {
-      if(posY > postureHeight)
+      if(postureHeight != 0)
       {
-        //play sound
-        sound.currentTime = 0; // Reset playback to the beginning
-        sound.play();
+        if(posY > postureHeight)
+        {
+          if(isGoodPosture)
+          {
+            isGoodPosture = false;
+            posYEl.style.color = "red";
+            sound.currentTime = 0; // Reset playback to the beginning
+            sound.play();
+          }
+          //play sound
+          // sound.currentTime = 0; // Reset playback to the beginning
+          // sound.play();
+        }
+        else
+        {
+          isGoodPosture = true;
+          sound.pause();
+          posYEl.style.color = "green";
+
+        }
       }
     }
 
