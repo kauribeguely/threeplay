@@ -19,21 +19,27 @@
   <div id="rotateMe"></div>
 
 
+
+
   <div class="info">
     <p><strong>Position:</strong> X: <span id="posX">0</span>, Y: <span id="posY">0</span>, Z: <span id="posZ">0</span></p>
     <p><strong>Rotation:</strong> RX: <span id="rotX">0</span>, RY: <span id="rotY">0</span>, RZ: <span id="rotZ">0</span></p>
   </div>
+  <button onmousedown="setPostureHeight()" id='setPosturePos'>Set Posture</button>
 
   <script>
     const video = document.getElementById('video');
     const posX = document.getElementById('posX');
-    const posY = document.getElementById('posY');
+    const posYEl = document.getElementById('posY');
     const posZ = document.getElementById('posZ');
     const rotX = document.getElementById('rotX');
     const rotY = document.getElementById('rotY');
     const rotZ = document.getElementById('rotZ');
     let rotMe = document.getElementById('rotateMe');
+    let setPosturePos = document.getElementById('setPosturePos');
+    const sound = new Audio('pong.mp3'); // Preload soun
 
+    let posY;
     // Initialize MediaPipe Face Mesh
     const faceMesh = new FaceMesh({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
     faceMesh.setOptions({
@@ -49,8 +55,11 @@
 
         // Calculate approximate head position using the nose tip
         const noseTip = landmarks[1]; // Landmark index 1 is usually the nose tip
+
+        posY = noseTip.y.toFixed(3);
+
         posX.textContent = noseTip.x.toFixed(3);
-        posY.textContent = noseTip.y.toFixed(3);
+        posYEl.textContent = posY;
         posZ.textContent = noseTip.z.toFixed(3);
 
         // Calculate head rotation (simplified using basic landmarks)
@@ -67,7 +76,7 @@
         const roll = Math.atan2(deltaZ, deltaY); // Tilt rotation
 
         rotX.textContent = pitch.toFixed(3);
-        rotY.textContent = yaw.toFixed(3);
+        rotY.textContent = yaw.toFixed(3) + " Set: " + postureHeight;
         rotZ.textContent = roll.toFixed(3);
 
         let rotX2 = 57.3 * pitch.toFixed(3);
@@ -75,6 +84,8 @@
         let rotZ2 = 57.3 * roll.toFixed(3);
 
         rotMe.style.transform = "rotateX("+rotX2+"deg) rotateY("+rotY2+"deg) rotateZ("+rotZ2+"deg)";
+
+        checkPosture();
       }
     });
 
@@ -88,6 +99,24 @@
       });
       camera.start();
     });
+
+
+    let postureHeight = 0;
+    function setPostureHeight()
+    {
+      postureHeight = posY;
+    }
+
+    function checkPosture()
+    {
+      if(posY > postureHeight)
+      {
+        //play sound
+        sound.currentTime = 0; // Reset playback to the beginning
+        sound.play();
+      }
+    }
+
   </script>
 </body>
 </html>
